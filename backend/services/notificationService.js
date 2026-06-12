@@ -31,11 +31,24 @@ try {
   console.log('   Error:', err.message);
 }
 
-// Initialize Twilio
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+// Initialize Twilio (Optional - runs in mock mode if missing)
+let twilioClient = null;
+let twilioInitialized = false;
+try {
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+    twilioClient = twilio(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+    twilioInitialized = true;
+    console.log('✓ Twilio initialized');
+  } else {
+    console.log('⚠️  Twilio credentials not found - running in mock mode');
+  }
+} catch (err) {
+  console.log('⚠️  Twilio initialization failed - running in mock mode');
+  console.log('   Error:', err.message);
+}
 
 // ============ PUSH NOTIFICATION SERVICE ============
 export const sendPushNotification = async (fcmToken, title, body, data = {}) => {
@@ -93,17 +106,22 @@ export const sendSMSNotification = async (phoneNumber, message) => {
       return null;
     }
 
-    const response = await twilioClient.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber
-    });
+    if (twilioInitialized && twilioClient) {
+      const response = await twilioClient.messages.create({
+        body: message,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phoneNumber
+      });
 
-    console.log('SMS sent:', response.sid);
-    return response;
+      console.log('SMS sent:', response.sid);
+      return response;
+    } else {
+      console.log('ℹ️  SMS (mock mode) to', phoneNumber, ':', message);
+      return { sid: 'mock-sms-' + Date.now() };
+    }
   } catch (error) {
     console.error('Error sending SMS:', error);
-    throw error;
+    return { error: error.message, mock: true };
   }
 };
 
