@@ -50,8 +50,14 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
     setSuccess(false);
 
     // Validation
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all required fields');
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword || !formData.age) {
+      setError('Please fill in all required fields (including age)');
+      return;
+    }
+
+    const parsedAge = parseInt(formData.age);
+    if (isNaN(parsedAge) || parsedAge <= 0 || parsedAge > 120) {
+      setError('Please enter a valid age between 1 and 120');
       return;
     }
 
@@ -176,7 +182,7 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
             <div className="space-y-2">
               <Label htmlFor="age" className="flex items-center space-x-2">
                 <Calendar className="w-5 h-5 text-primary" />
-                <span>Age (Optional)</span>
+                <span>Age *</span>
               </Label>
               <Input
                 id="age"

@@ -95,6 +95,10 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
             allergies: (response.user.allergies || []).join(', '),
             emergencyContacts: response.user.emergencyContacts || []
           });
+          if (!response.user.age || response.user.age === 0) {
+            setIsEditing(true);
+            toast.error('Please enter your age to complete your profile registration.');
+          }
         }
       } catch (error) {
         console.error('Failed to load profile:', error);
@@ -110,6 +114,15 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   const handleSaveProfile = async () => {
     if (!editForm.name.trim()) {
       toast.error('Name is required');
+      return;
+    }
+    if (!editForm.age || !editForm.age.trim()) {
+      toast.error('Age is required');
+      return;
+    }
+    const parsedAge = parseInt(editForm.age);
+    if (isNaN(parsedAge) || parsedAge <= 0 || parsedAge > 120) {
+      toast.error('Age must be a valid positive number between 1 and 120');
       return;
     }
     try {
@@ -173,16 +186,21 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-8 pb-20">
-      {/* Header */}
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
       <div className="flex items-center justify-between mb-10">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onNavigate('home')}
-          className="p-3 hover:bg-emerald-50"
-        >
-          <ArrowLeft className="w-8 h-8" />
-        </Button>
+        {(!profile?.age || profile?.age === 0) ? (
+          <div className="w-10" />
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onNavigate('home')}
+            className="p-3 hover:bg-emerald-50"
+          >
+            <ArrowLeft className="w-8 h-8" />
+          </Button>
+        )}
         <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
           Profile
         </h1>
@@ -378,14 +396,16 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                 <h2 className="text-3xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   Edit Profile
                 </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsEditing(false)}
-                  className="hover:bg-slate-100 rounded-full p-2"
-                >
-                  <X className="w-7 h-7" />
-                </Button>
+                {(!profile?.age || profile?.age === 0) ? null : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditing(false)}
+                    className="hover:bg-slate-100 rounded-full p-2"
+                  >
+                    <X className="w-7 h-7" />
+                  </Button>
+                )}
               </div>
 
               <div className="space-y-5">
@@ -416,7 +436,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-emerald-600" /> Age
+                      <Calendar className="w-5 h-5 text-emerald-600" /> Age *
                     </Label>
                     <Input
                       type="number"
@@ -554,19 +574,30 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                     )}
                     {saving ? 'Saving...' : 'Save Changes'}
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditing(false)}
-                    className="h-14 px-8 text-xl font-semibold border-2 border-slate-300 rounded-2xl"
-                  >
-                    Cancel
-                  </Button>
+                  {(!profile?.age || profile?.age === 0) ? (
+                    <Button
+                      variant="outline"
+                      onClick={handleSignOut}
+                      className="h-14 px-8 text-xl font-semibold border-2 border-red-300 text-red-600 hover:bg-red-50 rounded-2xl"
+                    >
+                      Sign Out
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                      className="h-14 px-8 text-xl font-semibold border-2 border-slate-300 rounded-2xl"
+                    >
+                      Cancel
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 }

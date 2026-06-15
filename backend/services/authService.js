@@ -8,7 +8,7 @@ const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 // ============ REGISTER USER ============
 export const registerUser = async (userData) => {
   try {
-    const { email, password, name, phone, role } = userData;
+    const { email, password, name, phone, role, age } = userData;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -25,7 +25,8 @@ export const registerUser = async (userData) => {
       email,
       password: hashedPassword,
       phone,
-      role: role || 'elder'
+      role: role || 'elder',
+      age
     });
 
     await user.save();
@@ -44,7 +45,8 @@ export const registerUser = async (userData) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: user.role,
+        age: user.age
       }
     };
   } catch (error) {
@@ -81,6 +83,7 @@ export const loginUser = async (email, password) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
+        age: user.age,
         fcmToken: user.fcmToken,
         emergencyContacts: user.emergencyContacts
       }

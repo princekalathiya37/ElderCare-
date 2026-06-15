@@ -115,138 +115,140 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-8 pb-20">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onNavigate('home')}
-          className="p-3 hover:bg-emerald-50"
-        >
-          <ArrowLeft className="w-8 h-8" />
-        </Button>
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-          My Medicines
-        </h1>
-        <div className="w-10" />
-      </div>
-
-      {/* Info Bar */}
-      <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <MessageSquare className="w-8 h-8 text-amber-600 flex-shrink-0" />
-            <p className="text-lg text-amber-800 font-semibold">
-              SMS alerts active — caregiver notified if medicine missed by 30 min
-            </p>
-          </div>
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
+            onClick={() => onNavigate('home')}
+            className="p-3 hover:bg-emerald-50"
           >
-            {refreshing ? 'Refreshing...' : 'Refresh'}
+            <ArrowLeft className="w-8 h-8" />
           </Button>
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            My Medicines
+          </h1>
+          <div className="w-10" />
         </div>
-      </Card>
 
-      {/* Error State */}
-      {error && (
-        <Card className="p-6 bg-red-50 border-2 border-red-200 mb-8">
-          <div className="flex items-center space-x-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-            <p className="text-red-800">{error}</p>
+        {/* Info Bar */}
+        <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <MessageSquare className="w-8 h-8 text-amber-600 flex-shrink-0" />
+              <p className="text-lg text-amber-800 font-semibold">
+                SMS alerts active — caregiver notified if medicine missed by 30 min
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </Button>
           </div>
         </Card>
-      )}
 
-      {/* Medicines List */}
-      {medicines.length === 0 ? (
-        <Card className="p-12 text-center bg-white/80 backdrop-blur-sm">
-          <Pill className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <p className="text-lg text-slate-600 mb-4">No medicines added yet</p>
-          <Button
-            onClick={handleAddMedicine}
-            className="bg-gradient-to-r from-emerald-600 to-teal-600"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add First Medicine
-          </Button>
-        </Card>
-      ) : (
-        <div className="space-y-6 mb-12">
-          {medicines.map((medicine) => (
-            <Card
-              key={medicine._id}
-              className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+        {/* Error State */}
+        {error && (
+          <Card className="p-6 bg-red-50 border-2 border-red-200 mb-8">
+            <div className="flex items-center space-x-4">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+              <p className="text-red-800">{error}</p>
+            </div>
+          </Card>
+        )}
+
+        {/* Medicines List */}
+        {medicines.length === 0 ? (
+          <Card className="p-12 text-center bg-white/80 backdrop-blur-sm">
+            <Pill className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <p className="text-lg text-slate-600 mb-4">No medicines added yet</p>
+            <Button
+              onClick={handleAddMedicine}
+              className="bg-gradient-to-r from-emerald-600 to-teal-600"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-6 flex-1">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Pill className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2">
-                      {medicine.name}
-                    </h3>
-                    <p className="text-lg text-slate-600 mb-2">
-                      {medicine.dosage} · {medicine.frequency}
-                    </p>
-                    <div className="flex items-center text-base text-slate-600 mb-2">
-                      <Clock className="w-5 h-5 mr-2" />
-                      {medicine.times.join(', ')}
+              <Plus className="w-5 h-5 mr-2" />
+              Add First Medicine
+            </Button>
+          </Card>
+        ) : (
+          <div className="space-y-6 mb-12">
+            {medicines.map((medicine) => (
+              <Card
+                key={medicine._id}
+                className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-6 flex-1">
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <Pill className="w-8 h-8 text-white" />
                     </div>
-                    {medicine.smsAlert && (
-                      <div className="flex items-center mt-2 space-x-2">
-                        <MessageSquare className="w-5 h-5 text-amber-500" />
-                        <span className="text-sm text-amber-600 font-semibold">
-                          SMS alert to {medicine.smsContact}
-                        </span>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                        {medicine.name}
+                      </h3>
+                      <p className="text-lg text-slate-600 mb-2">
+                        {medicine.dosage} · {medicine.frequency}
+                      </p>
+                      <div className="flex items-center text-base text-slate-600 mb-2">
+                        <Clock className="w-5 h-5 mr-2" />
+                        {medicine.times.join(', ')}
                       </div>
+                      {medicine.smsAlert && (
+                        <div className="flex items-center mt-2 space-x-2">
+                          <MessageSquare className="w-5 h-5 text-amber-500" />
+                          <span className="text-sm text-amber-600 font-semibold">
+                            SMS alert to {medicine.smsContact}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right space-y-4 ml-4">
+                    {medicine.taken ? (
+                      <Badge
+                        variant="secondary"
+                        className="text-lg px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700"
+                      >
+                        <CheckCircle2 className="w-5 h-5 mr-2" />
+                        Taken Today
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-lg px-4 py-2 border-amber-300 text-amber-700 bg-amber-50">
+                        Pending
+                      </Badge>
+                    )}
+                    {!medicine.taken && (
+                      <Button
+                        size="lg"
+                        className="h-14 text-base font-semibold mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-2xl"
+                        onClick={() => markTaken(medicine._id, medicine.times[0])}
+                      >
+                        <CheckCircle2 className="w-5 h-5 mr-2" />
+                        Mark Taken
+                      </Button>
                     )}
                   </div>
                 </div>
-                <div className="text-right space-y-4 ml-4">
-                  {medicine.taken ? (
-                    <Badge
-                      variant="secondary"
-                      className="text-lg px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700"
-                    >
-                      <CheckCircle2 className="w-5 h-5 mr-2" />
-                      Taken Today
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-lg px-4 py-2 border-amber-300 text-amber-700 bg-amber-50">
-                      Pending
-                    </Badge>
-                  )}
-                  {!medicine.taken && (
-                    <Button
-                      size="lg"
-                      className="h-14 text-base font-semibold mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-2xl"
-                      onClick={() => markTaken(medicine._id, medicine.times[0])}
-                    >
-                      <CheckCircle2 className="w-5 h-5 mr-2" />
-                      Mark Taken
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+              </Card>
+            ))}
+          </div>
+        )}
 
-      {/* Add Button */}
-      <div className="fixed bottom-28 right-8">
-        <Button
-          onClick={handleAddMedicine}
-          size="lg"
-          className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
-        >
-          <Plus className="w-10 h-10" />
-        </Button>
+        {/* Add Button */}
+        <div className="fixed bottom-28 right-8">
+          <Button
+            onClick={handleAddMedicine}
+            size="lg"
+            className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
+          >
+            <Plus className="w-10 h-10" />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   allergies: [String],
   role: {
     type: String,
-    enum: ['elder'],
+    enum: ['elder', 'caretaker'],
     default: 'elder'
   },
   googleId: String,

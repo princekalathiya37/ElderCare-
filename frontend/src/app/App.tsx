@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GOOGLE_CLIENT_ID, IS_GOOGLE_AUTH_ENABLED } from './config';
 import { GoogleLoginSection } from './components/GoogleLoginSection';
@@ -107,6 +107,32 @@ function EyeOff({ className }: { className?: string }) {
 function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => void; onBack: () => void; isRegister?: boolean }) {
   const [currentScreen, setCurrentScreen] = useState<Screen>(isRegister ? 'register' : 'login');
   const [transitionKey, setTransitionKey] = useState(0);
+  const [isAgeMissing, setIsAgeMissing] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token && currentScreen !== 'login' && currentScreen !== 'register') {
+      apiService.getUserProfile()
+        .then(res => {
+          if (res.success && res.user) {
+            if (!res.user.age || res.user.age === 0) {
+              setIsAgeMissing(true);
+              if (currentScreen !== 'profile') {
+                toast.error('Please complete your profile by entering your age.');
+                setCurrentScreen('profile');
+              }
+            } else {
+              setIsAgeMissing(false);
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Failed to verify profile age:', err);
+        });
+    } else {
+      setIsAgeMissing(false);
+    }
+  }, [currentScreen]);
 
   const handleNavigate = (screen: Screen) => {
     setTransitionKey(prev => prev + 1);
@@ -151,6 +177,7 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
   };
 
   const showNav =
+    !isAgeMissing &&
     currentScreen !== 'login' &&
     currentScreen !== 'register' &&
     currentScreen !== 'sos' &&

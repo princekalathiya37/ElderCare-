@@ -178,25 +178,32 @@ export const sendEscalationNotification = async (user, medicine, time) => {
 
 // ============ EMERGENCY SOS NOTIFICATION ============
 export const sendEmergencySosNotification = async (user, location) => {
+  const addressStr = location.address || (location.latitude && location.longitude ? `GPS: ${location.latitude}, ${location.longitude}` : location.lat && location.lng ? `GPS: ${location.lat}, ${location.lng}` : 'Unknown Location');
+  const lat = location.latitude || location.lat;
+  const lng = location.longitude || location.lng;
+  const mapLink = (lat && lng) ? ` Maps: https://www.google.com/maps?q=${lat},${lng}` : '';
+  const conditionsStr = Array.isArray(user.medicalConditions) ? user.medicalConditions.join(', ') : 'None';
+  const allergiesStr = Array.isArray(user.allergies) ? user.allergies.join(', ') : 'None';
+
   const sosData = {
     type: 'emergency-sos',
     userId: user._id.toString(),
     userName: user.name,
     userAge: user.age,
-    location: location,
+    location: { ...location, address: addressStr },
     bloodGroup: user.bloodGroup,
-    medicalConditions: user.medicalConditions,
-    allergies: user.allergies
+    medicalConditions: user.medicalConditions || [],
+    allergies: user.allergies || []
   };
 
   const title = '🚨 EMERGENCY SOS ALERT';
-  const body = `${user.name} has activated emergency SOS at ${location.address}`;
+  const body = `${user.name} has activated emergency SOS at ${addressStr}`;
 
   // Notify all emergency contacts
   for (const contact of user.emergencyContacts) {
     try {
       // Send SMS
-      const smsMessage = `🚨 EMERGENCY: ${user.name} (Age: ${user.age}, Blood: ${user.bloodGroup}) has activated SOS at ${location.address}. Medical Conditions: ${user.medicalConditions.join(', ')}. Allergies: ${user.allergies.join(', ')}`;
+      const smsMessage = `🚨 EMERGENCY: ${user.name} (Age: ${user.age || 'Not set'}, Blood: ${user.bloodGroup || 'Not set'}) has activated SOS at ${addressStr}.${mapLink} Medical Conditions: ${conditionsStr}. Allergies: ${allergiesStr}`;
       await sendSMSNotification(contact.phone, smsMessage);
 
       // Send email if available

@@ -5,10 +5,19 @@ import jwt from 'jsonwebtoken';
 // ============ REGISTER ============
 export const register = async (req, res) => {
   try {
-    const { email, password, name, phone, role } = req.body;
+    const { email, password, name, phone, role, age } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (age === undefined || age === null || age === '') {
+      return res.status(400).json({ error: 'Age is required' });
+    }
+
+    const parsedAge = parseInt(age);
+    if (isNaN(parsedAge) || parsedAge <= 0) {
+      return res.status(400).json({ error: 'Age must be a valid positive number' });
     }
 
     const result = await authService.registerUser({
@@ -16,7 +25,8 @@ export const register = async (req, res) => {
       password,
       name,
       phone,
-      role
+      role,
+      age: parsedAge
     });
 
     res.status(201).json({
@@ -94,7 +104,10 @@ export const googleLogin = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        age: user.age,
+        phone: user.phone,
+        emergencyContacts: user.emergencyContacts
       }
     });
   } catch (error) {

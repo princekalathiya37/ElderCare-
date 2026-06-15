@@ -17,14 +17,19 @@ export const triggerEmergencySOS = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Form address string fallback using coordinates if address is missing
+    const addressStr = location.address || (location.latitude && location.longitude ? `GPS: ${location.latitude}, ${location.longitude}` : location.lat && location.lng ? `GPS: ${location.lat}, ${location.lng}` : 'Unknown Location');
+    const conditionsStr = Array.isArray(user.medicalConditions) ? user.medicalConditions.join(', ') : 'None';
+    const medicalInfoStr = `Age: ${user.age || 'Not set'}, Blood: ${user.bloodGroup || 'Not set'}, Conditions: ${conditionsStr}`;
+
     // Create SOS record
     const sos = new EmergencySOS({
       userId: req.userId,
       location,
       status: 'active',
       emergencyDetails: {
-        userLocation: location.address,
-        userMedicalInfo: `Age: ${user.age}, Blood: ${user.bloodGroup}, Conditions: ${user.medicalConditions.join(', ')}`,
+        userLocation: addressStr,
+        userMedicalInfo: medicalInfoStr,
         timestamp: new Date()
       }
     });
@@ -48,7 +53,7 @@ export const triggerEmergencySOS = async (req, res) => {
         userId: req.userId,
         type: 'emergency-sos',
         title: 'Emergency SOS Activated',
-        message: `${user.name} has activated emergency SOS at ${location.address}`,
+        message: `${user.name} has activated emergency SOS at ${addressStr}`,
         status: 'sent',
         channel: 'sms',
         recipientPhone: contact.phone,
