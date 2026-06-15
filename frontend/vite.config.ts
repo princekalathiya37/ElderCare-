@@ -17,10 +17,17 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig(({ mode }) => {
-  // Load environment variables prefixed with REACT_APP_ from the root folder
-  const env = loadEnv(mode, process.cwd(), 'REACT_APP_');
-  // Also load VITE_ prefixed vars (e.g. VITE_GOOGLE_CLIENT_ID)
-  const viteEnv = loadEnv(mode, process.cwd(), 'VITE_');
+  // Load environment variables from system process.env and .env files
+  const env = {
+    ...Object.keys(process.env)
+      .filter((key) => key.startsWith('REACT_APP_') || key.startsWith('VITE_'))
+      .reduce((obj, key) => {
+        obj[key] = process.env[key];
+        return obj;
+      }, {}),
+    ...loadEnv(mode, process.cwd(), 'REACT_APP_'),
+    ...loadEnv(mode, process.cwd(), 'VITE_'),
+  };
 
   return {
     define: {
