@@ -78,14 +78,14 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
       const loc = await getLocation();
       setLocation(loc);
 
-      // Prepare medical info
-      const medicalInfo = {
-        location: loc,
+      // Call backend SOS endpoint — send location directly (lat/lng at top level)
+      const result = await apiService.triggerEmergencySOS({
+        lat: loc.lat,
+        lng: loc.lng,
+        latitude: loc.lat,
+        longitude: loc.lng,
         timestamp: new Date().toISOString()
-      };
-
-      // Call backend SOS endpoint
-      const result = await apiService.triggerEmergencySOS(medicalInfo);
+      });
 
       if (result.success) {
         setSOSTriggered(true);

@@ -178,12 +178,14 @@ export const sendEscalationNotification = async (user, medicine, time) => {
 
 // ============ EMERGENCY SOS NOTIFICATION ============
 export const sendEmergencySosNotification = async (user, location) => {
-  // Extract real location details (handling nested location.location from frontend medicalInfo wrapper)
-  const realLoc = (location && location.location) ? location.location : location;
-  const lat = realLoc?.latitude || realLoc?.lat;
-  const lng = realLoc?.longitude || realLoc?.lng;
-  const addressStr = location.address || realLoc?.address || (lat && lng ? `GPS: ${lat}, ${lng}` : 'Unknown Location');
-  const mapLink = (lat && lng) ? ` Maps: https://www.google.com/maps?q=${lat},${lng}` : '';
+  // Extract coordinates — handles flat {lat, lng} or nested {location: {lat, lng}}
+  const locObj = (location && typeof location.lat !== 'undefined') ? location
+    : (location && location.location) ? location.location
+    : location;
+  const lat = locObj?.lat ?? locObj?.latitude ?? null;
+  const lng = locObj?.lng ?? locObj?.longitude ?? null;
+  const addressStr = lat && lng ? `GPS: ${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}` : 'Unknown Location';
+  const mapLink = lat && lng ? ` Maps: https://www.google.com/maps?q=${lat},${lng}` : '';
   const conditionsStr = Array.isArray(user.medicalConditions) ? user.medicalConditions.join(', ') : 'None';
   const allergiesStr = Array.isArray(user.allergies) ? user.allergies.join(', ') : 'None';
 
