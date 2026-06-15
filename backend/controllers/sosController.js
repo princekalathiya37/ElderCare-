@@ -17,8 +17,12 @@ export const triggerEmergencySOS = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Form address string fallback using coordinates if address is missing
-    const addressStr = location.address || (location.latitude && location.longitude ? `GPS: ${location.latitude}, ${location.longitude}` : location.lat && location.lng ? `GPS: ${location.lat}, ${location.lng}` : 'Unknown Location');
+    // Extract real location details (handling nested location.location from frontend medicalInfo wrapper)
+    const realLoc = (location && location.location) ? location.location : location;
+    const lat = realLoc?.latitude || realLoc?.lat;
+    const lng = realLoc?.longitude || realLoc?.lng;
+    const addressStr = location.address || realLoc?.address || (lat && lng ? `GPS: ${lat}, ${lng}` : 'Unknown Location');
+
     const conditionsStr = Array.isArray(user.medicalConditions) ? user.medicalConditions.join(', ') : 'None';
     const medicalInfoStr = `Age: ${user.age || 'Not set'}, Blood: ${user.bloodGroup || 'Not set'}, Conditions: ${conditionsStr}`;
 

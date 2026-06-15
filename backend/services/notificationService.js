@@ -178,9 +178,11 @@ export const sendEscalationNotification = async (user, medicine, time) => {
 
 // ============ EMERGENCY SOS NOTIFICATION ============
 export const sendEmergencySosNotification = async (user, location) => {
-  const addressStr = location.address || (location.latitude && location.longitude ? `GPS: ${location.latitude}, ${location.longitude}` : location.lat && location.lng ? `GPS: ${location.lat}, ${location.lng}` : 'Unknown Location');
-  const lat = location.latitude || location.lat;
-  const lng = location.longitude || location.lng;
+  // Extract real location details (handling nested location.location from frontend medicalInfo wrapper)
+  const realLoc = (location && location.location) ? location.location : location;
+  const lat = realLoc?.latitude || realLoc?.lat;
+  const lng = realLoc?.longitude || realLoc?.lng;
+  const addressStr = location.address || realLoc?.address || (lat && lng ? `GPS: ${lat}, ${lng}` : 'Unknown Location');
   const mapLink = (lat && lng) ? ` Maps: https://www.google.com/maps?q=${lat},${lng}` : '';
   const conditionsStr = Array.isArray(user.medicalConditions) ? user.medicalConditions.join(', ') : 'None';
   const allergiesStr = Array.isArray(user.allergies) ? user.allergies.join(', ') : 'None';
