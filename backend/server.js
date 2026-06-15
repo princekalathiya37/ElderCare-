@@ -45,7 +45,16 @@ connectDatabase();
 
 // ============ HEALTH CHECK ============
 app.get('/health', (req, res) => {
-  res.json({ status: 'Server is running', timestamp: new Date() });
+  res.json({
+    status: 'Server is running',
+    timestamp: new Date(),
+    diagnostics: {
+      twilioConfigured: Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER),
+      firebaseConfigured: Boolean(process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL),
+      googleAuthConfigured: Boolean(process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID),
+      environment: process.env.NODE_ENV || 'development'
+    }
+  });
 });
 
 // ============ API ROUTES ============

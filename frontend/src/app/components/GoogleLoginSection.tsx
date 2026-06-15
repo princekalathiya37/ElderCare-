@@ -41,6 +41,10 @@ function GoogleLoginOption({
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
     onError: () => onError('Google sign-in was cancelled or failed'),
+    onNonOAuthError: (err) => {
+      console.error('Google Auth Non-OAuth Error:', err);
+      onError(`Google Sign-in failed (${err.type}). Ensure your domain is added to "Authorized JavaScript origins" in Google Cloud Console.`);
+    }
   });
 
   return (

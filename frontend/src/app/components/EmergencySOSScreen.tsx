@@ -97,8 +97,9 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
         
         if (failedSMS && failedSMS.length > 0) {
           const failedNames = failedSMS.map((c: any) => c.name).join(', ');
-          toast.error(`🚨 SOS Activated but SMS failed for: ${failedNames}`, {
-            description: failedSMS[0].error || 'Check Twilio configurations and phone numbers.'
+          const errDetail = failedSMS[0].error || 'Check Twilio configurations and phone numbers.';
+          toast.error(`🚨 SOS SMS failed for ${failedNames}: ${errDetail}`, {
+            duration: 15000
           });
         } else {
           toast.success('🚨 Emergency SOS Activated!', {
