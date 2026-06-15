@@ -1,8 +1,7 @@
-// ============ UPDATED EMERGENCY SOS SCREEN WITH BACKEND ============
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { AlertTriangle, Phone, MapPin, MessageSquare, Shield, ArrowLeft, Loader } from 'lucide-react';
+import { AlertTriangle, Phone, MapPin, Mail, Shield, ArrowLeft, Loader, CheckCircle } from 'lucide-react';
 import { Screen } from '../App';
 import apiService from '../services/apiService';
 import { toast } from 'sonner';
@@ -13,7 +12,8 @@ interface EmergencySOSScreenProps {
 
 interface EmergencyContact {
   name: string;
-  phone: string;
+  phone?: string;
+  email?: string;
   relationship: string;
 }
 
@@ -24,6 +24,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
   const [loading, setLoading] = useState(false);
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [deliveryStatus, setDeliveryStatus] = useState<any[]>([]);
 
   useEffect(() => {
     fetchEmergencyContacts();
@@ -32,11 +33,9 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
   // Countdown timer for cancel
   useEffect(() => {
     if (countdown === null || countdown <= 0) return;
-
     const timer = setTimeout(() => {
       setCountdown(countdown - 1);
     }, 1000);
-
     return () => clearTimeout(timer);
   }, [countdown]);
 
@@ -57,7 +56,6 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
         reject(new Error('Geolocation not supported'));
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
@@ -78,7 +76,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
       const loc = await getLocation();
       setLocation(loc);
 
-      // Call backend SOS endpoint — send location directly (lat/lng at top level)
+      // Call backend SOS endpoint
       const result = await apiService.triggerEmergencySOS({
         lat: loc.lat,
         lng: loc.lng,
@@ -90,48 +88,42 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
       if (result.success) {
         setSOSTriggered(true);
         setActiveSOSId(result.sos?._id || null);
-        setCountdown(10); // 10 second cancel window
+        setCountdown(10);
+        setDeliveryStatus(result.smsDeliveryStatus || []);
 
-        // Summarize delivery status for SMS and Email channels
+        // Build delivery summary
         const deliveryDetails = result.smsDeliveryStatus || [];
-        const successSends = deliveryDetails.filter((d: any) => d.smsStatus === 'sent' || d.emailStatus === 'sent');
-        const failedSends = deliveryDetails.filter((d: any) => 
-          (d.phone && d.phone !== 'Not set' && d.smsStatus === 'failed') || 
-          (d.email && d.email !== 'Not set' && d.emailStatus === 'failed')
-        );
+        const emailSent = deliveryDetails.filter((d: any) => d.emailStatus === 'sent');
+        const emailFailed = deliveryDetails.filter((d: any) => d.emailStatus === 'failed');
+        const emailSkipped = deliveryDetails.filter((d: any) => d.emailStatus === 'skipped');
 
-        if (failedSends.length > 0) {
-          const failedDetails = failedSends.map((d: any) => {
-            const problems = [];
-            if (d.smsStatus === 'failed') problems.push('SMS');
-            if (d.emailStatus === 'failed') problems.push('Email');
-            return `${d.name} (${problems.join(' & ')} failed)`;
-          }).join(', ');
-          
-          toast.error(`⚠️ SOS delivery issues: ${failedDetails}. Make sure you configured email/SMS credentials on Render.`, {
+        if (emailSent.length > 0) {
+          const names = emailSent.map((d: any) => d.name).join(', ');
+          toast.success('🚨 Emergency SOS Activated!', {
+            description: `📧 Email alerts sent to: ${names}`,
+            duration: 10000
+          });
+        }
+
+        if (emailFailed.length > 0) {
+          const names = emailFailed.map((d: any) => d.name).join(', ');
+          toast.error(`⚠️ Email failed for: ${names}. Check GMAIL_USER and GMAIL_APP_PASSWORD on Render.`, {
             duration: 15000
           });
         }
-        
-        if (successSends.length > 0) {
-          const successDetails = successSends.map((d: any) => {
-            const channels = [];
-            if (d.smsStatus === 'sent') channels.push('SMS');
-            if (d.emailStatus === 'sent') channels.push('Email');
-            return `${d.name} (${channels.join(' & ')})`;
-          }).join(', ');
 
-          toast.success('🚨 Emergency SOS Activated!', {
-            description: `Notified: ${successDetails}`,
-            duration: 10000
-          });
-        } else if (failedSends.length === 0) {
-          toast.success('🚨 Emergency SOS Activated!', {
-            description: 'SOS alert logged successfully.'
+        if (emailSkipped.length > 0 && emailSent.length === 0 && emailFailed.length === 0) {
+          toast.warning('⚠️ SOS triggered but no email addresses configured for contacts. Go to Profile → Emergency Contacts to add emails.', {
+            duration: 15000
           });
         }
 
-        // Auto-cancel countdown after 10 seconds (keep alert active but close cancel countdown)
+        if (deliveryDetails.length === 0) {
+          toast.success('🚨 Emergency SOS Activated!', {
+            description: 'No emergency contacts configured yet. Add them in Profile.'
+          });
+        }
+
         setTimeout(() => {
           setCountdown(null);
         }, 10000);
@@ -156,6 +148,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
       setSOSTriggered(false);
       setActiveSOSId(null);
       setCountdown(null);
+      setDeliveryStatus([]);
       toast.info('SOS Cancelled/Resolved');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to cancel SOS';
@@ -164,6 +157,9 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
       setLoading(false);
     }
   };
+
+  const contactsWithEmail = emergencyContacts.filter(c => c.email);
+  const contactsWithoutEmail = emergencyContacts.filter(c => !c.email);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 p-8">
@@ -189,7 +185,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
           <div className="flex items-center space-x-4">
             <AlertTriangle className="w-8 h-8 text-red-600 flex-shrink-0 animate-pulse" />
             <p className="text-lg text-red-800 font-semibold">
-              Press the button below ONLY in case of emergency
+              Press the button below ONLY in case of emergency. Email alerts will be sent to all emergency contacts.
             </p>
           </div>
         </Card>
@@ -200,7 +196,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
             <div className="text-center space-y-4">
               <AlertTriangle className="w-16 h-16 mx-auto animate-bounce" />
               <h2 className="text-3xl font-bold">🚨 EMERGENCY SOS ACTIVE 🚨</h2>
-              <p className="text-xl">Emergency contacts have been notified</p>
+              <p className="text-xl">Email alerts sent to emergency contacts</p>
               {location && (
                 <div className="flex items-center justify-center space-x-2 mt-4">
                   <MapPin className="w-5 h-5" />
@@ -209,9 +205,38 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
               )}
               {countdown !== null && (
                 <p className="text-2xl font-bold mt-4">
-                  Cancel available in: {countdown}s
+                  Cancel available for: {countdown}s
                 </p>
               )}
+            </div>
+          </Card>
+        )}
+
+        {/* Delivery Status */}
+        {deliveryStatus.length > 0 && (
+          <Card className="p-6 bg-white/80 border-2 border-emerald-200 mb-8">
+            <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-emerald-600" /> Alert Delivery Status
+            </h3>
+            <div className="space-y-2">
+              {deliveryStatus.map((d: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="font-semibold text-slate-700">{d.name}</span>
+                  <div className="flex items-center gap-2">
+                    {d.emailStatus === 'sent' && (
+                      <span className="flex items-center gap-1 text-emerald-600 text-sm font-semibold">
+                        <CheckCircle className="w-4 h-4" /> Email Sent
+                      </span>
+                    )}
+                    {d.emailStatus === 'failed' && (
+                      <span className="text-red-500 text-sm font-semibold">❌ Email Failed</span>
+                    )}
+                    {d.emailStatus === 'skipped' && (
+                      <span className="text-amber-500 text-sm font-semibold">⚠️ No Email Set</span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
         )}
@@ -238,20 +263,42 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
           ) : (
             <div className="space-y-4">
               {emergencyContacts.map((contact, idx) => (
-                <Card key={idx} className="p-6 bg-white/80 border-2 border-slate-200 hover:border-red-300">
-                  <div className="flex items-center justify-between">
+                <Card key={idx} className="p-6 bg-white/80 border-2 border-slate-200 hover:border-red-300 transition-colors">
+                  <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xl font-bold text-slate-800">{contact.name}</h3>
-                      <p className="text-slate-600">{contact.relationship}</p>
-                    </div>
-                    <div className="flex items-center space-x-2 text-red-600 font-mono text-lg">
-                      <Phone className="w-5 h-5" />
-                      {contact.phone}
+                      <p className="text-slate-500 text-sm mb-2">{contact.relationship}</p>
+                      {contact.email && (
+                        <div className="flex items-center gap-2 text-emerald-600">
+                          <Mail className="w-4 h-4" />
+                          <span className="text-sm font-medium">{contact.email}</span>
+                          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold">Will be notified</span>
+                        </div>
+                      )}
+                      {contact.phone && (
+                        <div className="flex items-center gap-2 text-slate-500 mt-1">
+                          <Phone className="w-4 h-4" />
+                          <span className="text-sm">{contact.phone}</span>
+                        </div>
+                      )}
+                      {!contact.email && (
+                        <div className="flex items-center gap-2 text-amber-500 mt-1">
+                          <Mail className="w-4 h-4" />
+                          <span className="text-xs font-medium">No email — add one in Profile to receive SOS alerts</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Card>
               ))}
             </div>
+          )}
+
+          {contactsWithoutEmail.length > 0 && contactsWithEmail.length > 0 && (
+            <p className="text-amber-600 text-sm mt-3 font-medium">
+              ⚠️ {contactsWithoutEmail.length} contact(s) have no email address and will not receive SOS alerts.{' '}
+              <button onClick={() => onNavigate('profile')} className="underline font-semibold">Update in Profile</button>
+            </p>
           )}
         </div>
 
@@ -269,11 +316,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
                   <Loader className="w-6 h-6 mr-2 animate-spin" />
                   Cancelling...
                 </>
-              ) : (
-                <>
-                  Cancel SOS
-                </>
-              )}
+              ) : 'Cancel SOS'}
             </Button>
           )}
 
@@ -283,7 +326,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
                 size="lg"
                 onClick={triggerSOS}
                 disabled={loading}
-                className="w-full h-24 text-2xl font-extrabold bg-gradient-to-br from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white shadow-2xl hover:shadow-3xl rounded-3xl transform hover:scale-105 transition-all"
+                className="w-full h-24 text-2xl font-extrabold bg-gradient-to-br from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white shadow-2xl rounded-3xl transform hover:scale-105 transition-all"
               >
                 {loading ? (
                   <>
@@ -302,16 +345,16 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
               <Card className="p-4 bg-slate-50 border-slate-200">
                 <div className="space-y-2 text-sm text-slate-600">
                   <p className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Your location will be shared with emergency contacts
+                    <MapPin className="w-4 h-4 mr-2 text-red-500" />
+                    Your GPS location will be shared with emergency contacts
                   </p>
                   <p className="flex items-center">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    SMS notifications sent to all emergency contacts
+                    <Mail className="w-4 h-4 mr-2 text-emerald-600" />
+                    Email alerts with location + medical info sent to all contacts
                   </p>
                   <p className="flex items-center">
-                    <AlertTriangle className="w-4 h-4 mr-2" />
-                    You will have 10 seconds to cancel if pressed by mistake
+                    <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />
+                    You have 10 seconds to cancel if pressed by mistake
                   </p>
                 </div>
               </Card>

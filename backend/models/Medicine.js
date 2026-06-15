@@ -13,17 +13,17 @@ const medicineSchema = new mongoose.Schema({
   dosage: String,
   frequency: {
     type: String,
-    enum: ['once-daily', 'twice-daily', 'three-times-daily', 'custom'],
+    enum: ['once-daily', 'twice-daily', 'three-times-daily', 'four-times-daily', 'as-needed', 'weekly', 'monthly', 'custom'],
     required: true
   },
-  scheduledTimes: [String], // Array of times like ["8:00 AM", "8:00 PM"]
+  scheduledTimes: [String], // Array of times like ["08:00", "20:00"]
   startDate: Date,
   endDate: Date,
-  smsAlert: {
+  emailAlert: {
     type: Boolean,
     default: true
   },
-  smsContact: String, // Phone number of caregiver
+  emailContact: String, // Email of caregiver/emergency contact to alert if not taken
   pushNotification: {
     type: Boolean,
     default: true
@@ -37,8 +37,8 @@ const medicineSchema = new mongoose.Schema({
     time: String,
     confirmed: Boolean,
     confirmedAt: Date,
-    smsAlertSent: Boolean,
-    smsAlertSentAt: Date
+    emailAlertSent: Boolean,
+    emailAlertSentAt: Date
   }],
   createdAt: {
     type: Date,

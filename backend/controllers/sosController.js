@@ -1,7 +1,7 @@
 import EmergencySOS from '../models/EmergencySOS.js';
 import User from '../models/User.js';
 import Notification from '../models/Notification.js';
-import { sendEmergencySosNotification, sendPushNotification, sendSMSNotification } from '../services/notificationService.js';
+import { sendEmergencySosNotification } from '../services/notificationService.js';
 
 // ============ TRIGGER EMERGENCY SOS ============
 export const triggerEmergencySOS = async (req, res) => {
@@ -52,7 +52,7 @@ export const triggerEmergencySOS = async (req, res) => {
         phone: contact.phone,
         email: contact.email,
         notifiedAt: new Date(),
-        channel: 'sms'
+        channel: 'email'
       });
 
       // Create notification record
@@ -62,8 +62,8 @@ export const triggerEmergencySOS = async (req, res) => {
         title: 'Emergency SOS Activated',
         message: `${user.name} has activated emergency SOS at ${addressStr}`,
         status: 'sent',
-        channel: 'sms',
-        recipientPhone: contact.phone,
+        channel: 'email',
+        recipientEmail: contact.email,
         metadata: sosData
       });
     }
@@ -121,8 +121,13 @@ export const resolveSOS = async (req, res) => {
     // Notify emergency contacts that SOS is resolved
     const user = await User.findById(req.userId);
     for (const contact of user.emergencyContacts) {
-      const message = `✅ Alert resolved: ${user.name}'s emergency SOS has been handled. Status updated.`;
-      await sendSMSNotification(contact.phone, message);
+      if (contact.email) {
+        const { sendEmailNotification } = await import('../services/notificationService.js');
+        const subject = `✅ SOS Resolved: ${user.name} is safe`;
+        const text = `${user.name}'s emergency SOS has been resolved and they are safe. No further action needed.`;
+        const html = `<div style="font-family: Arial; max-width: 600px; margin: 0 auto; border: 2px solid #10b981; border-radius: 8px; overflow: hidden;"><div style="background-color: #10b981; color: white; padding: 20px; text-align: center; font-size: 20px; font-weight: bold;">✅ Emergency Alert Resolved</div><div style="padding: 24px; color: #1f2937;"><h2 style="color: #059669;">${user.name} is safe</h2><p>The emergency SOS alert has been resolved. ${user.name} is safe and no further action is needed.</p><div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af; text-align: center;">This message was sent by ElderCare+ Emergency Alert System.</div></div></div>`;
+        await sendEmailNotification(contact.email, subject, text, html);
+      }
     }
 
     res.json({

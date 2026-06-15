@@ -37,13 +37,13 @@ export const startMedicineReminderScheduler = () => {
             date: now,
             time: currentTime,
             confirmed: false,
-            smsAlertSent: false
+            emailAlertSent: false
           };
           medicine.confirmations.push(confirmation);
           await medicine.save();
         }
 
-        // Send reminder
+        // Send reminder (push notification to user)
         await sendMedicineReminder(user, medicine, currentTime);
 
         // Save notification record
@@ -53,7 +53,7 @@ export const startMedicineReminderScheduler = () => {
           type: 'medicine-reminder',
           title: `Medicine Reminder - ${medicine.name}`,
           message: `Time to take ${medicine.name} (${medicine.dosage})`,
-          channel: medicine.pushNotification ? 'push' : 'sms',
+          channel: 'push',
           metadata: {
             medicineName: medicine.name,
             dosage: medicine.dosage,
@@ -83,32 +83,35 @@ export const startEscalationScheduler = () => {
       for (const medicine of medicines) {
         const user = medicine.userId;
         const today = new Date().toISOString().split('T')[0];
+
+        // Find unconfirmed reminders that have NOT had an email sent yet
         const unconfirmedReminders = medicine.confirmations.filter(c => {
           const confirmDate = new Date(c.date).toISOString().split('T')[0];
-          return confirmDate === today && !c.confirmed && !c.smsAlertSent;
+          return confirmDate === today && !c.confirmed && !c.emailAlertSent;
         });
 
         for (const reminder of unconfirmedReminders) {
           const reminderTime = new Date(`${now.toISOString().split('T')[0]} ${reminder.time}`);
           const minutesPassed = (now - reminderTime) / (1000 * 60);
 
-          // If more than 30 minutes have passed and not confirmed, escalate
-          if (minutesPassed >= medicine.escalationMinutes) {
+          // If more than escalationMinutes have passed and not confirmed, escalate
+          if (minutesPassed >= (medicine.escalationMinutes || 30)) {
+            // Send email alert to all emergency contacts
             await sendEscalationNotification(user, medicine, reminder.time);
 
-            reminder.smsAlertSent = true;
-            reminder.smsAlertSentAt = now;
+            // Mark escalation as sent
+            reminder.emailAlertSent = true;
+            reminder.emailAlertSentAt = now;
             await medicine.save();
 
-            // Save escalation notification
+            // Save escalation notification record
             await Notification.create({
               userId: user._id,
               medicineId: medicine._id,
               type: 'escalation',
               title: `Medicine Not Taken - ${medicine.name}`,
               message: `${user.name} hasn't taken ${medicine.name} since ${reminder.time}`,
-              channel: 'sms',
-              recipientPhone: medicine.smsContact,
+              channel: 'email',
               metadata: {
                 medicineName: medicine.name,
                 elderName: user.name,
@@ -117,7 +120,7 @@ export const startEscalationScheduler = () => {
               }
             });
 
-            console.log(`Escalation sent for ${user.name} - ${medicine.name}`);
+            console.log(`Escalation email sent for ${user.name} - ${medicine.name}`);
           }
         }
       }
@@ -130,12 +133,11 @@ export const startEscalationScheduler = () => {
 };
 
 // ============ DAILY RESET SCHEDULER ============
-// Resets medicine confirmations every day at midnight
+// Runs at midnight — no-op currently as confirmations are tracked per date
 export const startDailyResetScheduler = () => {
   cron.schedule('0 0 * * *', async () => {
     try {
-      console.log('Daily reset: Clearing confirmations for new day');
-      // This is handled in the confirmation tracking
+      console.log('Daily reset: Clearing confirmations for new day (tracked per date)');
     } catch (error) {
       console.error('Error in daily reset scheduler:', error);
     }

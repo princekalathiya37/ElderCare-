@@ -40,7 +40,7 @@ export const getMedicine = async (req, res) => {
 // ============ ADD MEDICINE ============
 export const addMedicine = async (req, res) => {
   try {
-    const { name, dosage, frequency, scheduledTimes, smsAlert, smsContact, pushNotification } = req.body;
+    const { name, dosage, frequency, scheduledTimes, emailAlert, emailContact, pushNotification } = req.body;
 
     const medicine = new Medicine({
       userId: req.userId,
@@ -48,8 +48,8 @@ export const addMedicine = async (req, res) => {
       dosage,
       frequency,
       scheduledTimes,
-      smsAlert: smsAlert !== false,
-      smsContact,
+      emailAlert: emailAlert !== false,
+      emailContact,
       pushNotification: pushNotification !== false,
       startDate: new Date(),
       confirmations: []
@@ -70,7 +70,7 @@ export const addMedicine = async (req, res) => {
 // ============ UPDATE MEDICINE ============
 export const updateMedicine = async (req, res) => {
   try {
-    const { name, dosage, frequency, scheduledTimes, smsAlert, smsContact, pushNotification, endDate } = req.body;
+    const { name, dosage, frequency, scheduledTimes, emailAlert, emailContact, pushNotification, endDate } = req.body;
 
     const medicine = await Medicine.findOneAndUpdate(
       { _id: req.params.medicineId, userId: req.userId },
@@ -79,8 +79,8 @@ export const updateMedicine = async (req, res) => {
         dosage,
         frequency,
         scheduledTimes,
-        smsAlert,
-        smsContact,
+        emailAlert,
+        emailContact,
         pushNotification,
         endDate
       },
@@ -143,14 +143,14 @@ export const confirmMedicineTaken = async (req, res) => {
     if (confirmation) {
       confirmation.confirmed = true;
       confirmation.confirmedAt = new Date();
-      confirmation.smsAlertSent = false; // Clear escalation since medicine was taken
+      confirmation.emailAlertSent = false; // Clear escalation since medicine was taken
     } else {
       confirmation = {
         date: new Date(),
         time,
         confirmed: true,
         confirmedAt: new Date(),
-        smsAlertSent: false
+        emailAlertSent: false
       };
       medicine.confirmations.push(confirmation);
     }
