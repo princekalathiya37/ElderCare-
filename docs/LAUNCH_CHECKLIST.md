@@ -34,11 +34,11 @@
 - [x] Setup automation (setup-dev.sh, complete-setup.sh)
 
 **Documentation**
-- [x] README.md - Main overview
-- [x] QUICK_START.md - 5-minute setup
+- [x] README.md - Main overview and map
 - [x] backend/README.md - API documentation
-- [x] IMPLEMENTATION_GUIDE.md - Frontend integration
-- [x] IMPLEMENTATION_STEPS.md - Step-by-step checklist
+- [x] IMPLEMENTATION_GUIDE.md - Frontend integration examples
+- [x] ARCHITECTURE.md - System architecture and flows
+- [x] DEPLOYMENT.md - Deployment instructions
 
 ---
 
@@ -197,8 +197,8 @@
   - Run test suite
 
 - [x] **Day 5**: Documentation review
-  - Read COMPLETE_IMPLEMENTATION.md
-  - Review SYSTEM_ARCHITECTURE.md
+  - Read README.md
+  - Review ARCHITECTURE.md
   - Understand data flow
 
 ### Week 2: Frontend Integration
@@ -374,17 +374,14 @@
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| COMPLETE_IMPLEMENTATION.md | Main overview & quick start | ✓ Created |
-| SYSTEM_ARCHITECTURE.md | Visual diagrams & data flows | ✓ Created |
-| DEPLOYMENT_PLATFORMS.md | Multi-platform deployment | ✓ Created |
+| README.md | Main project overview and entry point | ✓ Created |
+| ARCHITECTURE.md | System design, schemas, and flows | ✓ Created |
+| DEPLOYMENT.md | Multi-platform deployment (Heroku, AWS, Railway, Vercel, Docker) | ✓ Created |
 | SCALABILITY_GUIDE.md | Scaling to 10K+ users | ✓ Created |
 | IMPLEMENTATION_GUIDE.md | Frontend integration code | ✓ Created |
-| IMPLEMENTATION_STEPS.md | Step-by-step checklist | ✓ Created |
+| FIREBASE_SETUP.md | Firebase Cloud Messaging credentials setup | ✓ Created |
+| WINDOWS_SETUP.md | Windows-specific developer setup guide | ✓ Created |
 | backend/README.md | API reference | ✓ Created |
-| COMPLETE_SUMMARY.md | Feature overview | ✓ Created |
-| ARCHITECTURE.md | System design | ✓ Created |
-| INDEX.md | File navigation | ✓ Created |
-| NEXT_STEPS.md | Post-launch tasks | ✓ Created |
 
 ---
 
@@ -411,10 +408,10 @@
 6. **Monitor and optimize** for production
 
 ### Support
-- Documentation: See COMPLETE_IMPLEMENTATION.md
-- Issues: Check SYSTEM_ARCHITECTURE.md troubleshooting
+- Documentation: See README.md
+- Issues: Check ARCHITECTURE.md troubleshooting
 - Scaling: Follow SCALABILITY_GUIDE.md
-- Deployment: Use DEPLOYMENT_PLATFORMS.md
+- Deployment: Use DEPLOYMENT.md
 
 ---
 

@@ -1,100 +1,54 @@
-# ElderCare+ Heroku Deployment Guide
+# ElderCare+ Render Deployment Guide (Backend)
+
+Render is a modern cloud hosting platform offering free-tier Web Services. Follow these steps to host your ElderCare+ Node.js/Express backend on Render.
 
 ## Prerequisites
-- Heroku CLI installed
-- Git repository initialized
 - GitHub account
+- Git repository initialized and pushed to GitHub
+- MongoDB Atlas (Cloud Database) cluster created
 
-## Step 1: Create Heroku App
+## Step 1: Create a Render Web Service
 
-```bash
-# Login to Heroku
-heroku login
+1. Log in to the [Render Dashboard](https://render.com/).
+2. Click **New +** and select **Web Service**.
+3. Connect your GitHub repository containing the ElderCare+ codebase.
 
-# Create app
-heroku create eldercare-app
-# or specify name: heroku create your-app-name
+## Step 2: Configure the Service Settings
 
-# Add MongoDB addon
-heroku addons:create mongolab:sandbox
+Configure the deployment settings as follows:
+- **Name**: `eldercare-backend`
+- **Language**: `Node`
+- **Region**: Choose the region closest to your users.
+- **Branch**: `main`
+- **Root Directory**: `backend` (This runs commands inside the backend subdirectory)
+- **Build Command**: `npm install`
+- **Start Command**: `npm start`
+- **Instance Type**: Select the **Free** tier.
 
-# Add environment variables
-heroku config:set JWT_SECRET=your_very_secure_secret_key_min_32_chars
-heroku config:set JWT_EXPIRE=7d
-heroku config:set FIREBASE_PROJECT_ID=your-project-id
-heroku config:set FIREBASE_PRIVATE_KEY="$(cat firebase-key.json | grep private_key | cut -d'"' -f4)"
-heroku config:set FIREBASE_CLIENT_EMAIL=your-firebase-email
-heroku config:set TWILIO_ACCOUNT_SID=your_sid
-heroku config:set TWILIO_AUTH_TOKEN=your_token
-heroku config:set TWILIO_PHONE_NUMBER=+1234567890
-heroku config:set NODE_ENV=production
-```
+## Step 3: Configure Environment Variables
 
-## Step 2: Create Procfile
+Under the **Advanced** settings, add the following environment variables:
 
-In your root directory, create `Procfile`:
+| Variable Name | Description / Value |
+| --- | --- |
+| `MONGO_URI` | Your MongoDB Atlas connection string |
+| `JWT_SECRET` | A secure, random 32+ character signing key |
+| `JWT_EXPIRE` | `7d` |
+| `NODE_ENV` | `production` |
+| `PORT` | `10000` (Render will override this dynamically) |
+| `FIREBASE_PROJECT_ID` | Your Firebase project ID (for push notifications) |
+| `FIREBASE_PRIVATE_KEY` | Your Firebase private key |
+| `FIREBASE_CLIENT_EMAIL` | Your Firebase client email |
+| `TWILIO_ACCOUNT_SID` | Your Twilio Account SID (for caregiver SMS alerts) |
+| `TWILIO_AUTH_TOKEN` | Your Twilio Auth Token |
+| `TWILIO_PHONE_NUMBER` | Your Twilio Phone Number |
 
-```
-web: cd backend && npm start
-```
+## Step 4: Deploy and Verify
 
-## Step 3: Update package.json
-
-In `backend/package.json`, add engines:
-
-```json
-"engines": {
-  "node": "16.x"
-}
-```
-
-## Step 4: Deploy
-
-```bash
-# Add Heroku remote
-git remote add heroku https://git.heroku.com/your-app-name.git
-
-# Deploy
-git push heroku main
-
-# View logs
-heroku logs --tail
-
-# Run one-off commands
-heroku run npm run seed
-
-# Scale dynos
-heroku ps:scale web=1
-```
-
-## Step 5: Monitor
-
-```bash
-# Check app status
-heroku ps
-
-# View config
-heroku config
-
-# Update config
-heroku config:set NODE_ENV=production
-
-# Open app
-heroku open
-```
-
-## Troubleshooting
-
-### Port Issues
-Heroku assigns PORT dynamically. Backend already handles this with `process.env.PORT`.
-
-### MongoDB Connection
-- Check `MONGO_URI` is set correctly
-- Verify MongoDB Atlas firewall allows Heroku IPs
-
-### Cold Starts
-- First request after deploy takes longer
-- Consider using Heroku Scheduler for background jobs
+1. Click **Create Web Service**.
+2. Render will automatically clone the repository, install dependencies, and spin up the server.
+3. Once the service status turns **Live**, copy your public Render URL (e.g. `https://eldercare-backend.onrender.com`).
+4. Test the server by visiting `https://your-backend-url.onrender.com/health` in your browser. You should receive a JSON response: `{"status": "Server is running"}`.
 
 ---
 
@@ -291,9 +245,11 @@ vercel --prod
 ## Step 3: Environment Variables
 
 In Vercel dashboard:
+- Set **Root Directory** to `frontend`.
+- Add the following environment variables:
 
 ```
-REACT_APP_API_URL=https://your-api.herokuapp.com/api
+REACT_APP_API_URL=https://your-backend-url.onrender.com/api
 REACT_APP_VAPID_PUBLIC_KEY=your_vapid_key
 ```
 

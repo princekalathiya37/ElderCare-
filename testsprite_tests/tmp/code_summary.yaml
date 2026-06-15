@@ -1,0 +1,157 @@
+version: "2"
+type: backend
+tech_stack:
+  - Node.js
+  - Express
+  - MongoDB (Mongoose)
+  - Firebase Admin
+  - Twilio
+features:
+  - name: Authentication
+    description: User registration, login (email and Google OAuth), profile updates, FCM token updates, push notifications subscription, emergency contacts, and notifications preferences.
+    files:
+      - backend/routes/authRoutes.js
+      - backend/controllers/authController.js
+      - backend/models/User.js
+    endpoints:
+      - method: POST
+        path: /api/auth/register
+        description: Register a new user
+        auth_required: false
+      - method: POST
+        path: /api/auth/login
+        description: Authenticate user and return JWT
+        auth_required: false
+      - method: POST
+        path: /api/auth/google
+        description: Google OAuth login/registration
+        auth_required: false
+      - method: PUT
+        path: /api/auth/profile
+        description: Update user profile details
+        auth_required: true
+      - method: POST
+        path: /api/auth/update-fcm
+        description: Update FCM token for push notifications
+        auth_required: true
+      - method: POST
+        path: /api/auth/subscribe
+        description: Save Web Push subscription details
+        auth_required: true
+      - method: POST
+        path: /api/auth/emergency-contacts
+        description: Update emergency contacts list
+        auth_required: true
+      - method: GET
+        path: /api/auth/profile
+        description: Get user profile details
+        auth_required: true
+      - method: PUT
+        path: /api/auth/notification-preferences
+        description: Update notification preferences
+        auth_required: true
+  - name: Medicine Management
+    description: CRUD operations for medicines, logging adherence, viewing today's schedules, and adherence statistics.
+    files:
+      - backend/routes/medicineRoutes.js
+      - backend/controllers/medicineController.js
+      - backend/models/Medicine.js
+    endpoints:
+      - method: GET
+        path: /api/medicines
+        description: List all medicines for user
+        auth_required: true
+      - method: GET
+        path: /api/medicines/adherence/30days
+        description: Get 30-day medicine adherence statistics
+        auth_required: true
+      - method: GET
+        path: /api/medicines/today/list
+        description: Get today's scheduled medicines
+        auth_required: true
+      - method: GET
+        path: /api/medicines/:medicineId
+        description: Get single medicine details
+        auth_required: true
+      - method: POST
+        path: /api/medicines
+        description: Add new medicine
+        auth_required: true
+      - method: PUT
+        path: /api/medicines/:medicineId
+        description: Update medicine details
+        auth_required: true
+      - method: DELETE
+        path: /api/medicines/:medicineId
+        description: Delete medicine
+        auth_required: true
+      - method: POST
+        path: /api/medicines/:medicineId/confirm
+        description: Confirm medicine was taken at a given time
+        auth_required: true
+      - method: GET
+        path: /api/medicines/:medicineId/confirmations
+        description: Get confirmations for a specific date
+        auth_required: true
+  - name: Emergency SOS
+    description: Triggering emergency alerts, retrieving active SOS triggers, resolving alerts, and viewing history.
+    files:
+      - backend/routes/sosRoutes.js
+      - backend/controllers/sosController.js
+      - backend/models/SOSAlert.js
+    endpoints:
+      - method: POST
+        path: /api/sos/trigger
+        description: Trigger emergency SOS alert
+        auth_required: true
+      - method: GET
+        path: /api/sos/active
+        description: Get active SOS alerts
+        auth_required: true
+      - method: POST
+        path: /api/sos/:sosId/resolve
+        description: Resolve active SOS alert
+        auth_required: true
+      - method: GET
+        path: /api/sos/history
+        description: Get SOS alert history
+        auth_required: true
+  - name: Appointment Management
+    description: CRUD operations for appointments.
+    files:
+      - backend/routes/appointmentRoutes.js
+      - backend/controllers/appointmentController.js
+      - backend/models/Appointment.js
+    endpoints:
+      - method: GET
+        path: /api/appointments
+        description: Get appointments
+        auth_required: true
+      - method: POST
+        path: /api/appointments
+        description: Add new appointment
+        auth_required: true
+      - method: PUT
+        path: /api/appointments/:id
+        description: Update appointment details
+        auth_required: true
+      - method: DELETE
+        path: /api/appointments/:id
+        description: Delete appointment
+        auth_required: true
+  - name: Support System
+    description: Support ticket/query creation and tracking.
+    files:
+      - backend/routes/supportRoutes.js
+      - backend/controllers/supportController.js
+      - backend/models/Query.js
+    endpoints:
+      - method: POST
+        path: /api/support/query
+        description: Submit a new support query
+        auth_required: true
+      - method: GET
+        path: /api/support/queries
+        description: Retrieve my support queries
+        auth_required: true
+known_limitations: []

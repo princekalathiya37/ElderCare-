@@ -14,7 +14,9 @@ Since you're on Windows, here's the simplified setup:
 
 ### Frontend Dependencies
 ```powershell
+cd frontend
 npm install
+cd ..
 ```
 
 ### Backend Dependencies
@@ -52,10 +54,10 @@ TWILIO_AUTH_TOKEN=your_twilio_token
 TWILIO_PHONE_NUMBER=+1234567890
 ```
 
-### Create .env.local
+### Create frontend/.env.local
 ```powershell
 # Frontend environment
-notepad .env.local
+notepad frontend\.env.local
 ```
 
 **Add:**
@@ -76,6 +78,7 @@ npm run dev
 ### Terminal 2: Start Frontend
 ```powershell
 # In a new PowerShell window
+cd frontend
 npm run dev
 # Should see: http://localhost:5173
 ```
@@ -87,22 +90,6 @@ npm run dev
 Frontend: http://localhost:5173
 Backend API: http://localhost:5000/health
 ```
-
-### Run Tests
-```powershell
-bash run-e2e-tests.sh
-# All tests should pass
-```
-
----
-
-## 🎯 What Each Script Does
-
-| Script | Purpose | Command |
-|--------|---------|---------|
-| `run-e2e-tests.sh` | Test all 6 features | `bash run-e2e-tests.sh` |
-| `run-tests.sh` | API tests | `bash run-tests.sh` |
-| `setup-dev.sh` | Dev environment | `bash setup-dev.sh` |
 
 ## ❌ Troubleshooting
 
@@ -118,8 +105,8 @@ taskkill /PID <PID> /F
 ### "Cannot find module"
 ```powershell
 # Clear cache and reinstall
-rm -Recurse node_modules, backend/node_modules
-npm install
+rm -Recurse frontend/node_modules, backend/node_modules
+cd frontend && npm install && cd ..
 cd backend && npm install && cd ..
 ```
 
@@ -137,13 +124,12 @@ cd backend && npm install && cd ..
 
 ## 📖 Next Steps
 
-1. ✅ Install dependencies (`npm install`)
+1. ✅ Install dependencies (`cd frontend && npm install && cd ..` and `cd backend && npm install && cd ..`)
 2. ✅ Configure `.env` files
 3. ✅ Start backend (`cd backend && npm run dev`)
-4. ✅ Start frontend (`npm run dev`)
+4. ✅ Start frontend (`cd frontend && npm run dev`)
 5. ✅ Open http://localhost:5173
-6. ✅ Run tests (`bash run-e2e-tests.sh`)
-7. ✅ Deploy to production (see DEPLOYMENT_PLATFORMS.md)
+6. ✅ Deploy to production (see DEPLOYMENT.md)
 
 ## 🎯 After Setup Works Locally
 
@@ -156,7 +142,7 @@ git push heroku main
 ```
 
 ### Deploy to AWS
-- See DEPLOYMENT_PLATFORMS.md AWS section
+- See DEPLOYMENT.md AWS section
 
 ### Deploy to Railway
 - Connect GitHub repo
@@ -167,17 +153,14 @@ git push heroku main
 
 ```powershell
 # Install all dependencies
-npm install
+cd frontend && npm install && cd ..
 cd backend && npm install && cd ..
 
 # Start backend (Terminal 1)
 cd backend && npm run dev
 
 # Start frontend (Terminal 2)
-npm run dev
-
-# Run tests
-bash run-e2e-tests.sh
+cd frontend && npm run dev
 
 # Stop services
 # Press Ctrl+C in each terminal
