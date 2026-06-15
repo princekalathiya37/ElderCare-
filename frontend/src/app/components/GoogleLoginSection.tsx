@@ -53,7 +53,7 @@ function GoogleLoginOption({
           <span className="text-lg font-semibold text-slate-500">or</span>
         </div>
       </div>
-      <GoogleButton onClick={() => googleLogin()} />
+      <GoogleButton onClick={googleLogin} />
     </>
   );
 }
