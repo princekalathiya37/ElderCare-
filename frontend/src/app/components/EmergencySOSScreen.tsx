@@ -92,18 +92,42 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
         setActiveSOSId(result.sos?._id || null);
         setCountdown(10); // 10 second cancel window
 
-        // Check if any SMS failed to deliver
-        const failedSMS = result.smsDeliveryStatus?.filter((status: any) => status.status === 'failed');
-        
-        if (failedSMS && failedSMS.length > 0) {
-          const failedNames = failedSMS.map((c: any) => c.name).join(', ');
-          const errDetail = failedSMS[0].error || 'Check Twilio configurations and phone numbers.';
-          toast.error(`🚨 SOS SMS failed for ${failedNames}: ${errDetail}`, {
+        // Summarize delivery status for SMS and Email channels
+        const deliveryDetails = result.smsDeliveryStatus || [];
+        const successSends = deliveryDetails.filter((d: any) => d.smsStatus === 'sent' || d.emailStatus === 'sent');
+        const failedSends = deliveryDetails.filter((d: any) => 
+          (d.phone && d.phone !== 'Not set' && d.smsStatus === 'failed') || 
+          (d.email && d.email !== 'Not set' && d.emailStatus === 'failed')
+        );
+
+        if (failedSends.length > 0) {
+          const failedDetails = failedSends.map((d: any) => {
+            const problems = [];
+            if (d.smsStatus === 'failed') problems.push('SMS');
+            if (d.emailStatus === 'failed') problems.push('Email');
+            return `${d.name} (${problems.join(' & ')} failed)`;
+          }).join(', ');
+          
+          toast.error(`⚠️ SOS delivery issues: ${failedDetails}. Make sure you configured email/SMS credentials on Render.`, {
             duration: 15000
           });
-        } else {
+        }
+        
+        if (successSends.length > 0) {
+          const successDetails = successSends.map((d: any) => {
+            const channels = [];
+            if (d.smsStatus === 'sent') channels.push('SMS');
+            if (d.emailStatus === 'sent') channels.push('Email');
+            return `${d.name} (${channels.join(' & ')})`;
+          }).join(', ');
+
           toast.success('🚨 Emergency SOS Activated!', {
-            description: 'Family members notified with your location'
+            description: `Notified: ${successDetails}`,
+            duration: 10000
+          });
+        } else if (failedSends.length === 0) {
+          toast.success('🚨 Emergency SOS Activated!', {
+            description: 'SOS alert logged successfully.'
           });
         }
 

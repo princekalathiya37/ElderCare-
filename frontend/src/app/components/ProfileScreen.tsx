@@ -44,6 +44,7 @@ interface UserProfile {
     name: string;
     relationship: string;
     phone: string;
+    email?: string;
   }>;
   medicalConditions?: string[];
   allergies?: string[];
@@ -68,7 +69,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
     bloodGroup: string;
     medicalConditions: string;
     allergies: string;
-    emergencyContacts: Array<{ name: string; phone: string; relationship: string; }>;
+    emergencyContacts: Array<{ name: string; phone: string; relationship: string; email?: string; }>;
   }>({
     name: '',
     phone: '',
@@ -269,9 +270,19 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                     {contact.relationship}
                   </Badge>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <Phone className="w-6 h-6 text-red-600" />
-                  <span className="text-xl font-semibold text-red-700">{contact.phone}</span>
+                <div className="space-y-2">
+                  {contact.phone && (
+                    <div className="flex items-center space-x-4">
+                      <Phone className="w-6 h-6 text-red-600" />
+                      <span className="text-xl font-semibold text-red-700">{contact.phone}</span>
+                    </div>
+                  )}
+                  {contact.email && (
+                    <div className="flex items-center space-x-4">
+                      <Mail className="w-6 h-6 text-red-600" />
+                      <span className="text-xl font-semibold text-red-700">{contact.email}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -499,7 +510,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                       size="sm"
                       onClick={() => setEditForm({
                         ...editForm,
-                        emergencyContacts: [...editForm.emergencyContacts, { name: '', phone: '', relationship: '' }]
+                        emergencyContacts: [...editForm.emergencyContacts, { name: '', phone: '', relationship: '', email: '' }]
                       })}
                       className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
                     >
@@ -549,6 +560,17 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
                           onChange={e => {
                             const newContacts = [...editForm.emergencyContacts];
                             newContacts[idx].phone = e.target.value;
+                            setEditForm({ ...editForm, emergencyContacts: newContacts });
+                          }}
+                          className="col-span-2 h-12"
+                        />
+                        <Input
+                          placeholder="Email"
+                          type="email"
+                          value={contact.email || ''}
+                          onChange={e => {
+                            const newContacts = [...editForm.emergencyContacts];
+                            newContacts[idx].email = e.target.value;
                             setEditForm({ ...editForm, emergencyContacts: newContacts });
                           }}
                           className="col-span-2 h-12"
