@@ -39,7 +39,9 @@ try {
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD
-      }
+      },
+      connectionTimeout: 10000, // 10 seconds timeout for establishing connection
+      socketTimeout: 10000 // 10 seconds timeout for data transfer
     });
     emailInitialized = true;
     console.log('✓ Email Service (Nodemailer/Gmail) initialized');
@@ -187,21 +189,33 @@ export const sendEscalationNotification = async (user, medicine, time) => {
     </div>
   `;
 
-  for (const contact of fullUser.emergencyContacts) {
+  const emailPromises = fullUser.emergencyContacts.map(async (contact) => {
     if (!contact.email) {
       console.log(`No email for emergency contact ${contact.name}, skipping escalation`);
-      escalationEmailResults.push({ name: contact.name, status: 'skipped', reason: 'No email set' });
-      continue;
+      return { name: contact.name, status: 'skipped', reason: 'No email set' };
     }
 
-    const result = await sendEmailNotification(contact.email, subject, textBody, htmlBody);
-    escalationEmailResults.push({
-      name: contact.name,
-      email: contact.email,
-      status: result && !result.error ? 'sent' : 'failed',
-      error: result?.error || null
-    });
-  }
+    try {
+      const result = await sendEmailNotification(contact.email, subject, textBody, htmlBody);
+      return {
+        name: contact.name,
+        email: contact.email,
+        status: result && !result.error ? 'sent' : 'failed',
+        error: result?.error || null
+      };
+    } catch (error) {
+      console.error(`Error emailing contact ${contact.name} for escalation:`, error);
+      return {
+        name: contact.name,
+        email: contact.email,
+        status: 'failed',
+        error: error.message
+      };
+    }
+  });
+
+  const results = await Promise.all(emailPromises);
+  escalationEmailResults.push(...results);
 
   return escalationEmailResults;
 };
@@ -239,16 +253,15 @@ export const sendEmergencySosNotification = async (user, location) => {
     return sosData;
   }
 
-  // Email each emergency contact
-  for (const contact of user.emergencyContacts) {
+  // Email emergency contacts in parallel
+  const emailPromises = user.emergencyContacts.map(async (contact) => {
     if (!contact.email) {
-      deliveryResults.push({
+      return {
         name: contact.name,
         email: 'Not set',
         emailStatus: 'skipped',
         emailError: 'No email address configured for this contact'
-      });
-      continue;
+      };
     }
 
     try {
@@ -304,25 +317,28 @@ export const sendEmergencySosNotification = async (user, location) => {
 
       const res = await sendEmailNotification(contact.email, emailSubject, emailText, emailHtml);
 
-      deliveryResults.push({
+      return {
         name: contact.name,
         email: contact.email,
         emailStatus: (!emailInitialized || (res && res.error)) ? 'failed' : 'sent',
         emailError: !emailInitialized
           ? 'Gmail SMTP credentials not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to Render environment.'
           : (res?.error || null)
-      });
+      };
 
     } catch (error) {
       console.error(`Error emailing contact ${contact.name}:`, error);
-      deliveryResults.push({
+      return {
         name: contact.name,
         email: contact.email,
         emailStatus: 'failed',
         emailError: error.message
-      });
+      };
     }
-  }
+  });
+
+  const results = await Promise.all(emailPromises);
+  deliveryResults.push(...results);
 
   sosData.deliveryResults = deliveryResults;
   return sosData;

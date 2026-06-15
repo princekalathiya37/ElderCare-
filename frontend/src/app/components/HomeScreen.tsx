@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { Pill, Calendar, Phone, Clock, User, MapPin, MessageSquare, HeartPulse, Loader } from 'lucide-react';
+import { Pill, Calendar, Phone, Clock, User, MapPin, MessageSquare, HeartPulse, Loader, Mail } from 'lucide-react';
 import { Screen } from '../App';
 import apiService from '../services/apiService';
 
@@ -16,7 +16,7 @@ interface Medicine {
   dosage: string;
   times: string[];
   taken: boolean;
-  smsAlert: boolean;
+  emailAlert: boolean;
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
@@ -44,7 +44,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             dosage: med.dosage,
             times: med.scheduledTimes,
             taken: med.todaysConfirmations?.some((c: any) => c.confirmed) || false,
-            smsAlert: med.smsAlert
+            emailAlert: med.emailAlert
           }));
           setTodayMedicines(transformed);
         }
@@ -104,13 +104,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
         </div>
 
-        {/* SMS Alert Banner */}
+        {/* Email Alert Banner */}
         <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-6">
           <div className="flex items-start space-x-4">
-            <MessageSquare className="w-7 h-7 text-amber-600 flex-shrink-0 mt-0.5" />
+            <Mail className="w-7 h-7 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h4 className="text-lg font-semibold text-amber-800 mb-1">SMS Alert Active</h4>
-              <p className="text-amber-700">Your caregiver will be notified if medicine is not taken within 30 minutes</p>
+              <h4 className="text-lg font-semibold text-amber-800 mb-1">Email Alert Active</h4>
+              <p className="text-amber-700">Your caregiver will be notified via email if medicine is not taken within 30 minutes</p>
             </div>
           </div>
         </Card>
@@ -154,10 +154,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                     <div className="flex-1">
                       <h4 className="text-xl font-bold text-slate-800 mb-1">{medicine.name}</h4>
                       <p className="text-lg text-slate-600 mb-2">{medicine.dosage}</p>
-                      {medicine.smsAlert && !medicine.taken && (
+                      {medicine.emailAlert && !medicine.taken && (
                         <div className="flex items-center">
-                          <MessageSquare className="w-5 h-5 text-amber-500 mr-2" />
-                          <span className="text-sm font-semibold text-amber-600">SMS alert in 30 min</span>
+                          <Mail className="w-5 h-5 text-amber-500 mr-2" />
+                          <span className="text-sm font-semibold text-amber-600">Email alert in 30 min</span>
                         </div>
                       )}
                     </div>

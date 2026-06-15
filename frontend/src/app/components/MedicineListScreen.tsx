@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { Plus, Clock, Pill, ArrowLeft, MessageSquare, CheckCircle2, AlertCircle, Loader } from 'lucide-react';
+import { Plus, Clock, Pill, ArrowLeft, MessageSquare, CheckCircle2, AlertCircle, Loader, Mail } from 'lucide-react';
 import { Screen } from '../App';
 import apiService from '../services/apiService';
 import { toast } from 'sonner';
@@ -20,8 +20,8 @@ interface Medicine {
   frequency: string;
   nextDose: string;
   taken: boolean;
-  smsAlert: boolean;
-  smsContact: string;
+  emailAlert: boolean;
+  emailContact: string;
   scheduledMinutesAgo?: number;
 }
 
@@ -52,8 +52,8 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
           frequency: med.frequency,
           nextDose: med.scheduledTimes[0] || 'Not scheduled',
           taken: med.todaysConfirmations?.some((c: any) => c.confirmed) || false,
-          smsAlert: med.smsAlert,
-          smsContact: med.smsContact,
+          emailAlert: med.emailAlert,
+          emailContact: med.emailContact,
           scheduledMinutesAgo: 0
         }));
 
@@ -136,9 +136,9 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
         <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <MessageSquare className="w-8 h-8 text-amber-600 flex-shrink-0" />
+              <Mail className="w-8 h-8 text-amber-600 flex-shrink-0" />
               <p className="text-lg text-amber-800 font-semibold">
-                SMS alerts active — caregiver notified if medicine missed by 30 min
+                Email alerts active — caregiver notified if medicine missed by 30 min
               </p>
             </div>
             <Button
@@ -198,11 +198,11 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
                         <Clock className="w-5 h-5 mr-2" />
                         {medicine.times.join(', ')}
                       </div>
-                      {medicine.smsAlert && (
+                      {medicine.emailAlert && (
                         <div className="flex items-center mt-2 space-x-2">
-                          <MessageSquare className="w-5 h-5 text-amber-500" />
+                          <Mail className="w-5 h-5 text-amber-500" />
                           <span className="text-sm text-amber-600 font-semibold">
-                            SMS alert to {medicine.smsContact}
+                            Email alert to {medicine.emailContact}
                           </span>
                         </div>
                       )}

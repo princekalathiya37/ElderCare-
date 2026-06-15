@@ -63,7 +63,8 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
             lng: position.coords.longitude
           });
         },
-        (error) => reject(error)
+        (error) => reject(error),
+        { timeout: 10000, enableHighAccuracy: true }
       );
     });
   };
@@ -72,16 +73,28 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
     try {
       setLoading(true);
 
-      // Get location
-      const loc = await getLocation();
-      setLocation(loc);
+      // Get location with timeout/failure handling
+      let loc = null;
+      try {
+        loc = await getLocation();
+        setLocation(loc);
+      } catch (geoError) {
+        console.warn('Geolocation failed or timed out:', geoError);
+        toast.warning('Could not retrieve precise location. Sending SOS with unknown location.');
+      }
 
       // Call backend SOS endpoint
-      const result = await apiService.triggerEmergencySOS({
+      const result = await apiService.triggerEmergencySOS(loc ? {
         lat: loc.lat,
         lng: loc.lng,
         latitude: loc.lat,
         longitude: loc.lng,
+        timestamp: new Date().toISOString()
+      } : {
+        lat: 0,
+        lng: 0,
+        latitude: 0,
+        longitude: 0,
         timestamp: new Date().toISOString()
       });
 
