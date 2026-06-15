@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const colors = [
   "#f7ff0a", "#a0f303", "#4ede05", "#0bca07", "#08b53b", "#09a266", "#0a8e84", "#0a607b"
@@ -66,7 +67,7 @@ export function BlackFireCursorTrail() {
     };
   }, []);
 
-  return (
+  return createPortal(
     <>
       {Array.from({ length: CIRCLE_COUNT }).map((_, i) => (
         <div
@@ -91,6 +92,7 @@ export function BlackFireCursorTrail() {
           }}
         />
       ))}
-    </>
+    </>,
+    document.body
   );
 }
