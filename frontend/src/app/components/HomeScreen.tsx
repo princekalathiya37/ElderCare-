@@ -22,6 +22,7 @@ interface Medicine {
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [userName, setUserName] = useState('User');
   const [todayMedicines, setTodayMedicines] = useState<Medicine[]>([]);
+  const [nextAppointment, setNextAppointment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +48,21 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           }));
           setTodayMedicines(transformed);
         }
+
+        // Fetch appointments
+        const appointmentsRes = await apiService.getAppointments();
+        if (appointmentsRes.success && appointmentsRes.appointments) {
+          const now = new Date();
+          const upcoming = appointmentsRes.appointments
+            .filter((apt: any) => apt.status === 'upcoming')
+            .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          
+          if (upcoming.length > 0) {
+            setNextAppointment(upcoming[0]);
+          } else {
+            setNextAppointment(null);
+          }
+        }
       } catch (err) {
         console.error('Failed to load home data:', err);
       } finally {
@@ -70,13 +86,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     day: 'numeric'
   });
 
-  const nextAppointment = {
-    doctor: 'Dr. Sarah Johnson',
-    specialty: 'Cardiologist',
-    date: 'Tomorrow',
-    time: '10:30 AM',
-    location: 'City Medical Center'
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-8 pb-20">
@@ -183,27 +193,35 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <Calendar className="w-7 h-7 mr-3" />
             Next Appointment
           </h2>
-          <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200">
-            <div className="flex items-start space-x-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <User className="w-8 h-8 text-white" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-2xl font-bold text-slate-800 mb-1">{nextAppointment.doctor}</h4>
-                <p className="text-lg text-slate-600 mb-4">{nextAppointment.specialty}</p>
-                <div className="space-y-2 text-base">
-                  <div className="flex items-center text-slate-700">
-                    <Calendar className="w-6 h-6 mr-3 text-emerald-600" />
-                    <span className="font-semibold">{nextAppointment.date} at {nextAppointment.time}</span>
-                  </div>
-                  <div className="flex items-center text-slate-700">
-                    <MapPin className="w-6 h-6 mr-3 text-emerald-600" />
-                    <span>{nextAppointment.location}</span>
+          {nextAppointment ? (
+            <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200">
+              <div className="flex items-start space-x-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-2xl font-bold text-slate-800 mb-1">{nextAppointment.doctorName}</h4>
+                  {nextAppointment.specialty && <p className="text-lg text-slate-600 mb-4">{nextAppointment.specialty}</p>}
+                  <div className="space-y-2 text-base">
+                    <div className="flex items-center text-slate-700">
+                      <Calendar className="w-6 h-6 mr-3 text-emerald-600" />
+                      <span className="font-semibold">{new Date(nextAppointment.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {nextAppointment.time}</span>
+                    </div>
+                    {nextAppointment.location && (
+                      <div className="flex items-center text-slate-700">
+                        <MapPin className="w-6 h-6 mr-3 text-emerald-600" />
+                        <span>{nextAppointment.location}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="py-8 text-center text-slate-500 text-lg italic">
+              No upcoming appointments.
+            </div>
+          )}
           <Button
             onClick={() => onNavigate('appointments')}
             variant="outline"

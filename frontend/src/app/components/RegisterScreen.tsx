@@ -19,6 +19,8 @@ import {
 import { Screen } from '../App';
 
 import apiService from '../services/apiService';
+import { GoogleLoginSection } from './GoogleLoginSection';
+import { toast } from 'sonner';
 
 interface RegisterScreenProps {
   onNavigate: (screen: any) => void;
@@ -39,6 +41,7 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -323,10 +326,19 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
             <Button
               className="w-full h-14 text-lg bg-primary hover:bg-primary/90"
               onClick={handleRegister}
-              disabled={success}
+              disabled={success || loading}
             >
               {success ? 'Registration Successful!' : 'Create Account'}
             </Button>
+
+            <GoogleLoginSection
+              onSuccess={() => {
+                toast.success('Signed in with Google!');
+                onNavigate('home');
+              }}
+              onError={setError}
+              setLoading={setLoading}
+            />
 
             {/* Divider */}
             <div className="relative">
