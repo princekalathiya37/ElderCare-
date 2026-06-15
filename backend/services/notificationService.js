@@ -213,8 +213,10 @@ export const sendEmergencySosNotification = async (user, location) => {
       deliveryResults.push({
         name: contact.name,
         phone: contact.phone,
-        status: (res && res.error) ? 'failed' : 'sent',
-        error: res?.error || null
+        status: (!twilioInitialized || (res && res.error)) ? 'failed' : 'sent',
+        error: !twilioInitialized 
+          ? 'Twilio is running in Mock Mode. Please configure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in your Render dashboard environment variables.' 
+          : (res?.error || null)
       });
 
       // Send email if available
