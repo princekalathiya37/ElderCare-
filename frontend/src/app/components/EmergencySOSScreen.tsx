@@ -92,9 +92,19 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
         setActiveSOSId(result.sos?._id || null);
         setCountdown(10); // 10 second cancel window
 
-        toast.success('🚨 Emergency SOS Activated!', {
-          description: 'Family members notified with your location'
-        });
+        // Check if any SMS failed to deliver
+        const failedSMS = result.smsDeliveryStatus?.filter((status: any) => status.status === 'failed');
+        
+        if (failedSMS && failedSMS.length > 0) {
+          const failedNames = failedSMS.map((c: any) => c.name).join(', ');
+          toast.error(`🚨 SOS Activated but SMS failed for: ${failedNames}`, {
+            description: failedSMS[0].error || 'Check Twilio configurations and phone numbers.'
+          });
+        } else {
+          toast.success('🚨 Emergency SOS Activated!', {
+            description: 'Family members notified with your location'
+          });
+        }
 
         // Auto-cancel countdown after 10 seconds (keep alert active but close cancel countdown)
         setTimeout(() => {

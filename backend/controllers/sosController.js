@@ -71,7 +71,8 @@ export const triggerEmergencySOS = async (req, res) => {
       success: true,
       message: 'Emergency SOS triggered successfully',
       sos,
-      notifiedContacts: user.emergencyContacts.length
+      notifiedContacts: user.emergencyContacts.length,
+      smsDeliveryStatus: sosData.deliveryResults
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

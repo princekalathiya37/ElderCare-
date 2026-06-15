@@ -201,12 +201,21 @@ export const sendEmergencySosNotification = async (user, location) => {
   const title = '🚨 EMERGENCY SOS ALERT';
   const body = `${user.name} has activated emergency SOS at ${addressStr}`;
 
+  const deliveryResults = [];
+
   // Notify all emergency contacts
   for (const contact of user.emergencyContacts) {
     try {
       // Send SMS
       const smsMessage = `🚨 EMERGENCY: ${user.name} (Age: ${user.age || 'Not set'}, Blood: ${user.bloodGroup || 'Not set'}) has activated SOS at ${addressStr}.${mapLink} Medical Conditions: ${conditionsStr}. Allergies: ${allergiesStr}`;
-      await sendSMSNotification(contact.phone, smsMessage);
+      const res = await sendSMSNotification(contact.phone, smsMessage);
+      
+      deliveryResults.push({
+        name: contact.name,
+        phone: contact.phone,
+        status: (res && res.error) ? 'failed' : 'sent',
+        error: res?.error || null
+      });
 
       // Send email if available
       if (contact.email) {
@@ -215,8 +224,16 @@ export const sendEmergencySosNotification = async (user, location) => {
       }
     } catch (error) {
       console.error(`Error notifying contact ${contact.name}:`, error);
+      deliveryResults.push({
+        name: contact.name,
+        phone: contact.phone,
+        status: 'failed',
+        error: error.message
+      });
     }
   }
+
+  sosData.deliveryResults = deliveryResults;
 
   return sosData;
 };
