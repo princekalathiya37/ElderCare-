@@ -34,12 +34,22 @@ const FRAG_SHADER = `
 
     vec2 uv = fragCoord / iResolution.xy;
     vec2 mouse = iMouse.xy;
+    
+    // If mouse is at default sentinel off-screen value or uninitialized
+    if (mouse.x < -900.0) {
+      // Keep it off-screen so no blob is rendered
+      fragColor = texture2D(iChannel0, uv);
+      return;
+    }
+    
     if (length(mouse) < NUM_ONE) {
       mouse = iResolution.xy / NUM_TWO;
     }
-    vec2 m2 = (uv - mouse / iResolution.xy);
 
-    float roundedBox = pow(abs(m2.x * iResolution.x / iResolution.y), POWER_EXPONENT) + pow(abs(m2.y), POWER_EXPONENT);
+    float minDim = min(iResolution.x, iResolution.y);
+    vec2 m2 = (fragCoord - mouse) / minDim;
+
+    float roundedBox = pow(abs(m2.x), POWER_EXPONENT) + pow(abs(m2.y), POWER_EXPONENT);
     float rb1 = clamp((NUM_ONE - roundedBox * MASK_MULTIPLIER_1) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
     float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox * MASK_MULTIPLIER_2) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
       clamp(pow(MASK_THRESHOLD_2 - roundedBox * MASK_MULTIPLIER_2, NUM_ONE) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
@@ -105,7 +115,7 @@ export function LiquidGlass({
   const glRef = useRef<WebGLRenderingContext | null>(null);
   const programRef = useRef<WebGLProgram | null>(null);
   const uniformsRef = useRef<Record<string, WebGLUniformLocation | null>>({});
-  const mouseRef = useRef<[number, number]>([0, 0]);
+  const mouseRef = useRef<[number, number]>([-1000, -1000]);
   const rafRef = useRef<number>(0);
   const textureRef = useRef<WebGLTexture | null>(null);
   const startTimeRef = useRef<number>(performance.now());
@@ -265,8 +275,8 @@ export function LiquidGlass({
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
-      // Initialize mouse to center
-      mouseRef.current = [canvas.width / 2, canvas.height / 2];
+      // Keep mouse off-screen initially
+      mouseRef.current = [-1000, -1000];
     };
     setSize();
 
@@ -328,12 +338,17 @@ export function LiquidGlass({
     mouseRef.current = [x, y];
   }, []);
 
+  const handlePointerLeave = useCallback(() => {
+    mouseRef.current = [-1000, -1000];
+  }, []);
+
   return (
     <div
       ref={containerRef}
       className={`relative ${className}`}
       style={style}
       onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
     >
       {/* WebGL canvas for the glass effect */}
       <canvas
