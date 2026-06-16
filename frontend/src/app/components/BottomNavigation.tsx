@@ -1,6 +1,7 @@
 import React from 'react';
 import { Home, Pill, Calendar, FileText, User } from 'lucide-react';
 import { Screen } from '../App';
+import { LiquidGlass } from './ui/LiquidGlass';
 
 interface BottomNavigationProps {
   currentScreen: Screen;
@@ -17,7 +18,10 @@ export function BottomNavigation({ currentScreen, onNavigate }: BottomNavigation
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-lg border-t-2 border-emerald-100 shadow-2xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <LiquidGlass
+      className="border-t border-white/30 shadow-2xl"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       <div className="flex items-center justify-around py-2 px-2 sm:py-3 sm:px-4">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -29,16 +33,16 @@ export function BottomNavigation({ currentScreen, onNavigate }: BottomNavigation
               onClick={() => onNavigate(item.id)}
               className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${
                 isActive 
-                  ? 'text-emerald-600 bg-emerald-50' 
-                  : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50'
+                  ? 'text-emerald-700 bg-white/40 shadow-lg backdrop-blur-sm' 
+                  : 'text-slate-600 hover:text-emerald-600 hover:bg-white/20'
               }`}
             >
-              <Icon className="w-8 h-8 mb-1" />
-              <span className="text-sm font-semibold">{item.label}</span>
+              <Icon className={`w-7 h-7 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : ''}`} />
+              <span className={`text-xs font-semibold ${isActive ? 'text-emerald-700' : ''}`}>{item.label}</span>
             </button>
           );
         })}
       </div>
-    </div>
+    </LiquidGlass>
   );
 }
