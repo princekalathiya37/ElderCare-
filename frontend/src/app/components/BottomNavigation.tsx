@@ -17,8 +17,8 @@ export function BottomNavigation({ currentScreen, onNavigate }: BottomNavigation
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-lg border-t-2 border-emerald-100 shadow-2xl">
-      <div className="flex items-center justify-around py-3 px-4">
+    <div className="bg-white/95 backdrop-blur-lg border-t-2 border-emerald-100 shadow-2xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="flex items-center justify-around py-2 px-2 sm:py-3 sm:px-4">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentScreen === item.id;

@@ -89,15 +89,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-8 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Good Morning, {userName}!
             </h1>
-            <p className="text-xl text-slate-600 mt-2">{currentDate}</p>
+            <p className="text-base sm:text-xl text-slate-600 mt-1 sm:mt-2">{currentDate}</p>
           </div>
           <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-xl">
             <HeartPulse className="w-8 h-8 text-white" />
@@ -105,7 +105,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </div>
 
         {/* Email Alert Banner */}
-        <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-6">
+        <Card className="p-4 sm:p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-4 sm:mb-6">
           <div className="flex items-start space-x-4">
             <Mail className="w-7 h-7 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -118,15 +118,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         {/* Emergency SOS Button */}
         <Button
           onClick={() => onNavigate('sos')}
-          className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 mb-8"
+          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-semibold bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 mb-4 sm:mb-8"
         >
           <Phone className="w-7 h-7 mr-3" />
           Emergency SOS
         </Button>
 
         {/* Today's Medicines */}
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 mb-6 shadow-lg">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-6 flex items-center">
+        <Card className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 mb-4 sm:mb-6 shadow-lg">
+          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
             <Pill className="w-7 h-7 mr-3" />
             Today's Medicines
           </h2>
@@ -188,8 +188,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </Card>
 
         {/* Next Appointment */}
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-6 flex items-center">
+        <Card className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg">
+          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
             <Calendar className="w-7 h-7 mr-3" />
             Next Appointment
           </h2>

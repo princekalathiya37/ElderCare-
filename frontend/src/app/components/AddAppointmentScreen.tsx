@@ -60,7 +60,7 @@ export function AddAppointmentScreen({ onNavigate }: AddAppointmentScreenProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-8 sm:p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <Button
