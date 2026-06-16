@@ -105,9 +105,75 @@ function EyeOff({ className }: { className?: string }) {
 }
 
 function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => void; onBack: () => void; isRegister?: boolean }) {
-  const [currentScreen, setCurrentScreen] = useState<Screen>(isRegister ? 'register' : 'login');
+  const getInitialScreen = (): Screen => {
+    const token = localStorage.getItem('authToken');
+    const hash = window.location.hash.replace('#', '') as Screen;
+    const validScreens: Screen[] = [
+      'login', 'register', 'home', 'medicines', 'add-medicine', 
+      'appointments', 'add-appointment', 'records', 'profile', 
+      'sos', 'calendar', 'notifications', 'help', 'privacy', 'terms'
+    ];
+    const hashScreen = validScreens.includes(hash) ? hash : null;
+
+    if (token) {
+      if (hashScreen && hashScreen !== 'login' && hashScreen !== 'register') {
+        return hashScreen;
+      }
+      return 'home';
+    } else {
+      if (hashScreen === 'register') {
+        return 'register';
+      }
+      return 'login';
+    }
+  };
+
+  const [currentScreen, setCurrentScreen] = useState<Screen>(getInitialScreen);
   const [transitionKey, setTransitionKey] = useState(0);
   const [isAgeMissing, setIsAgeMissing] = useState(false);
+
+  useEffect(() => {
+    // Set initial hash
+    if (!window.location.hash || window.location.hash === '#') {
+      window.location.hash = currentScreen;
+    }
+
+    const handleHashChange = () => {
+      const token = localStorage.getItem('authToken');
+      const hash = window.location.hash.replace('#', '') as Screen;
+      const validScreens: Screen[] = [
+        'login', 'register', 'home', 'medicines', 'add-medicine', 
+        'appointments', 'add-appointment', 'records', 'profile', 
+        'sos', 'calendar', 'notifications', 'help', 'privacy', 'terms'
+      ];
+      
+      const targetScreen = validScreens.includes(hash) ? hash : (token ? 'home' : 'login');
+      
+      if (token) {
+        if (targetScreen === 'login' || targetScreen === 'register') {
+          // Keep user logged in, redirect away from login/register
+          setCurrentScreen('home');
+          window.location.hash = 'home';
+        } else {
+          setCurrentScreen(targetScreen);
+        }
+      } else {
+        if (targetScreen !== 'login' && targetScreen !== 'register') {
+          // Non-logged-in users must be on login or register screen
+          setCurrentScreen('login');
+          window.location.hash = 'login';
+        } else {
+          setCurrentScreen(targetScreen);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    // Sync if URL is loaded directly with hash mismatch
+    handleHashChange();
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -120,6 +186,7 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
               if (currentScreen !== 'profile') {
                 toast.error('Please complete your profile by entering your age.');
                 setCurrentScreen('profile');
+                window.location.hash = 'profile';
               }
             } else {
               setIsAgeMissing(false);
@@ -128,6 +195,17 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
         })
         .catch(err => {
           console.error('Failed to verify profile age:', err);
+          // Only force logout for genuine auth errors (expired/invalid token),
+          // NOT for transient network errors or backend cold starts
+          const errorMsg = err?.message?.toLowerCase() || '';
+          if (errorMsg.includes('invalid token') || errorMsg.includes('no token') || errorMsg.includes('unauthorized') || errorMsg.includes('jwt') || errorMsg.includes('401')) {
+            localStorage.removeItem('authToken');
+            apiService.token = null;
+            handleNavigate('login');
+            toast.error('Session expired or invalid. Please sign in again.');
+          } else {
+            console.warn('Profile check failed (non-auth error), keeping session:', err.message);
+          }
         });
     } else {
       setIsAgeMissing(false);
@@ -137,6 +215,7 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
   const handleNavigate = (screen: Screen) => {
     setTransitionKey(prev => prev + 1);
     setCurrentScreen(screen);
+    window.location.hash = screen;
   };
 
   const renderScreen = () => {

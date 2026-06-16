@@ -13,7 +13,8 @@ import {
   AlertCircle,
   User,
   Pill,
-  ArrowLeft
+  ArrowLeft,
+  Loader
 } from 'lucide-react';
 import { Screen } from '../App';
 
@@ -211,10 +212,18 @@ export function LoginScreen({ onNavigate, onBack }: LoginScreenProps) {
 
             {/* Login Button */}
             <Button
-              className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex items-center justify-center"
               onClick={handleLogin}
+              disabled={loading}
             >
-              Sign In
+              {loading ? (
+                <>
+                  <Loader className="w-6 h-6 mr-2 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </Button>
 
             <GoogleLoginSection

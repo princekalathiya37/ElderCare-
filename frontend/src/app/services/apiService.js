@@ -279,7 +279,9 @@ class APIService {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'API request failed');
+      const errorMessage = data.error || 'API request failed';
+      // Include status code in error message so callers can detect auth errors
+      throw new Error(response.status === 401 ? `401: ${errorMessage}` : errorMessage);
     }
 
     return data;

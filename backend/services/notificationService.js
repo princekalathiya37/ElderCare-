@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import axios from 'axios';
 
 dotenv.config();
 
@@ -29,28 +30,66 @@ try {
   console.log('   Error:', err.message);
 }
 
-// Initialize Nodemailer for Email alerts (Gmail SMTP)
+// Initialize Email Service (HTTP API Providers or Gmail SMTP)
 let emailTransporter = null;
 let emailInitialized = false;
-try {
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+let emailServiceType = 'mock'; // 'gmail', 'resend', 'brevo', 'sendgrid', 'mock'
+
+if (process.env.RESEND_API_KEY) {
+  emailInitialized = true;
+  emailServiceType = 'resend';
+  console.log('✓ Email Service (Resend HTTP API) initialized');
+} else if (process.env.BREVO_API_KEY) {
+  emailInitialized = true;
+  emailServiceType = 'brevo';
+  console.log('✓ Email Service (Brevo HTTP API) initialized');
+} else if (process.env.SENDGRID_API_KEY) {
+  emailInitialized = true;
+  emailServiceType = 'sendgrid';
+  console.log('✓ Email Service (SendGrid HTTP API) initialized');
+} else if (process.env.BREVO_SMTP_KEY && process.env.BREVO_SMTP_LOGIN) {
+  // Brevo SMTP via nodemailer (uses xsmtpsib-... key)
+  try {
     emailTransporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
+        user: process.env.BREVO_SMTP_LOGIN,
+        pass: process.env.BREVO_SMTP_KEY
       },
-      connectionTimeout: 10000, // 10 seconds timeout for establishing connection
-      socketTimeout: 10000 // 10 seconds timeout for data transfer
+      connectionTimeout: 15000,
+      socketTimeout: 15000
     });
     emailInitialized = true;
-    console.log('✓ Email Service (Nodemailer/Gmail) initialized');
-  } else {
-    console.log('⚠️  GMAIL_USER and GMAIL_APP_PASSWORD not set - email alerts disabled');
+    emailServiceType = 'brevo-smtp';
+    console.log('✓ Email Service (Brevo SMTP) initialized');
+  } catch (err) {
+    console.log('⚠️  Email Service (Brevo SMTP) initialization failed');
+    console.log('   Error:', err.message);
   }
-} catch (err) {
-  console.log('⚠️  Email Service initialization failed');
-  console.log('   Error:', err.message);
+} else {
+  try {
+    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+      emailTransporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD
+        },
+        connectionTimeout: 10000, // 10 seconds timeout for establishing connection
+        socketTimeout: 10000 // 10 seconds timeout for data transfer
+      });
+      emailInitialized = true;
+      emailServiceType = 'gmail';
+      console.log('✓ Email Service (Nodemailer/Gmail SMTP) initialized');
+    } else {
+      console.log('⚠️  No email provider API keys or Gmail credentials configured - email alerts disabled (mock mode)');
+    }
+  } catch (err) {
+    console.log('⚠️  Email Service (Gmail SMTP) initialization failed');
+    console.log('   Error:', err.message);
+  }
 }
 
 // ============ PUSH NOTIFICATION SERVICE ============
@@ -105,7 +144,81 @@ export const sendEmailNotification = async (toEmail, subject, textBody, htmlBody
       return null;
     }
 
-    if (emailInitialized && emailTransporter) {
+    if (!emailInitialized) {
+      console.log('ℹ️  Email (mock mode) to', toEmail, ':', subject);
+      return { messageId: 'mock-email-' + Date.now(), mock: true };
+    }
+
+    if (emailServiceType === 'resend') {
+      const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+      const response = await axios.post('https://api.resend.com/emails', {
+        from: `ElderCare+ Alert System <${fromEmail}>`,
+        to: toEmail,
+        subject,
+        text: textBody,
+        html: htmlBody
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('✓ Email sent via Resend API to', toEmail, ':', response.data.id);
+      return { messageId: response.data.id };
+    }
+
+    if (emailServiceType === 'brevo') {
+      const fromEmail = process.env.EMAIL_FROM || 'sender@example.com';
+      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+        sender: { name: 'ElderCare+ Alert System', email: fromEmail },
+        to: [{ email: toEmail }],
+        subject,
+        textContent: textBody,
+        htmlContent: htmlBody
+      }, {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('✓ Email sent via Brevo API to', toEmail, ':', response.data.messageId);
+      return { messageId: response.data.messageId };
+    }
+
+    if (emailServiceType === 'sendgrid') {
+      const fromEmail = process.env.EMAIL_FROM || 'sender@example.com';
+      const response = await axios.post('https://api.sendgrid.com/v3/mail/send', {
+        personalizations: [{ to: [{ email: toEmail }] }],
+        from: { email: fromEmail, name: 'ElderCare+ Alert System' },
+        subject,
+        content: [
+          { type: 'text/plain', value: textBody },
+          { type: 'text/html', value: htmlBody }
+        ]
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('✓ Email sent via SendGrid API to', toEmail);
+      return { messageId: 'sendgrid-' + Date.now() };
+    }
+
+    if (emailServiceType === 'brevo-smtp' && emailTransporter) {
+      const fromEmail = process.env.EMAIL_FROM || process.env.BREVO_SMTP_LOGIN;
+      const info = await emailTransporter.sendMail({
+        from: `"ElderCare+ Alert System" <${fromEmail}>`,
+        to: toEmail,
+        subject,
+        text: textBody,
+        html: htmlBody
+      });
+      console.log('✓ Email sent via Brevo SMTP to', toEmail, ':', info.messageId);
+      return info;
+    }
+
+    if (emailServiceType === 'gmail' && emailTransporter) {
       const info = await emailTransporter.sendMail({
         from: `"ElderCare+ Alert System" <${process.env.GMAIL_USER}>`,
         to: toEmail,
@@ -113,15 +226,18 @@ export const sendEmailNotification = async (toEmail, subject, textBody, htmlBody
         text: textBody,
         html: htmlBody
       });
-      console.log('✓ Email sent to', toEmail, ':', info.messageId);
+      console.log('✓ Email sent via Gmail SMTP to', toEmail, ':', info.messageId);
       return info;
-    } else {
-      console.log('ℹ️  Email (mock mode) to', toEmail, ':', subject);
-      return { messageId: 'mock-email-' + Date.now() };
     }
+
+    // Fallback if configured but type is mismatched
+    console.log('ℹ️  Email (mock mode fallback) to', toEmail, ':', subject);
+    return { messageId: 'mock-email-' + Date.now(), mock: true };
+
   } catch (error) {
-    console.error('Error sending email to', toEmail, ':', error);
-    return { error: error.message, mock: true };
+    console.error('Error sending email to', toEmail, ':', error.response?.data || error.message);
+    const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message;
+    return { error: typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : errorMsg };
   }
 };
 
@@ -320,10 +436,9 @@ export const sendEmergencySosNotification = async (user, location) => {
       return {
         name: contact.name,
         email: contact.email,
-        emailStatus: (!emailInitialized || (res && res.error)) ? 'failed' : 'sent',
-        emailError: !emailInitialized
-          ? 'Gmail SMTP credentials not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to Render environment.'
-          : (res?.error || null)
+        emailStatus: (res && res.error) ? 'failed' : 'sent',
+        emailError: res?.error || null,
+        isMock: !emailInitialized || (res && res.mock) ? true : false
       };
 
     } catch (error) {

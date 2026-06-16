@@ -109,18 +109,22 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
         const emailSent = deliveryDetails.filter((d: any) => d.emailStatus === 'sent');
         const emailFailed = deliveryDetails.filter((d: any) => d.emailStatus === 'failed');
         const emailSkipped = deliveryDetails.filter((d: any) => d.emailStatus === 'skipped');
+        const emailMock = deliveryDetails.filter((d: any) => d.emailStatus === 'sent' && d.isMock);
 
         if (emailSent.length > 0) {
           const names = emailSent.map((d: any) => d.name).join(', ');
+          const isMockMode = emailMock.length > 0;
           toast.success('🚨 Emergency SOS Activated!', {
-            description: `📧 Email alerts sent to: ${names}`,
+            description: isMockMode 
+              ? `📧 Email alerts logged in mock mode for: ${names} (Configure GMAIL_USER in .env for real emails)`
+              : `📧 Email alerts sent to: ${names}`,
             duration: 10000
           });
         }
 
         if (emailFailed.length > 0) {
           const names = emailFailed.map((d: any) => d.name).join(', ');
-          toast.error(`⚠️ Email failed for: ${names}. Check GMAIL_USER and GMAIL_APP_PASSWORD on Render.`, {
+          toast.error(`⚠️ Email failed for: ${names}. If hosted on Render Free Tier (which blocks SMTP), please configure RESEND_API_KEY, BREVO_API_KEY, or SENDGRID_API_KEY on Render.`, {
             duration: 15000
           });
         }
@@ -238,7 +242,7 @@ export function EmergencySOSScreen({ onNavigate }: EmergencySOSScreenProps) {
                   <div className="flex items-center gap-2">
                     {d.emailStatus === 'sent' && (
                       <span className="flex items-center gap-1 text-emerald-600 text-sm font-semibold">
-                        <CheckCircle className="w-4 h-4" /> Email Sent
+                        <CheckCircle className="w-4 h-4" /> {d.isMock ? 'Email Logged (Mock)' : 'Email Sent'}
                       </span>
                     )}
                     {d.emailStatus === 'failed' && (

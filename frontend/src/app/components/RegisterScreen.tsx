@@ -14,7 +14,8 @@ import {
   Phone,
   Calendar,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Loader
 } from 'lucide-react';
 import { Screen } from '../App';
 
@@ -90,6 +91,7 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
     }
 
     try {
+      setLoading(true);
       const response = await apiService.register({
         email: formData.email,
         password: formData.password,
@@ -107,6 +109,8 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -324,11 +328,20 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
 
             {/* Register Button */}
             <Button
-              className="w-full h-14 text-lg bg-primary hover:bg-primary/90"
+              className="w-full h-14 text-lg bg-primary hover:bg-primary/90 flex items-center justify-center"
               onClick={handleRegister}
               disabled={success || loading}
             >
-              {success ? 'Registration Successful!' : 'Create Account'}
+              {loading ? (
+                <>
+                  <Loader className="w-5 h-5 mr-2 animate-spin" />
+                  Creating Account...
+                </>
+              ) : success ? (
+                'Registration Successful!'
+              ) : (
+                'Create Account'
+              )}
             </Button>
 
             <GoogleLoginSection

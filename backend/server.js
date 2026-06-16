@@ -49,7 +49,12 @@ app.get('/health', (req, res) => {
     status: 'Server is running',
     timestamp: new Date(),
     diagnostics: {
-      emailConfigured: Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD),
+      emailConfigured: Boolean(
+        (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) || 
+        process.env.RESEND_API_KEY || 
+        process.env.BREVO_API_KEY || 
+        process.env.SENDGRID_API_KEY
+      ),
       firebaseConfigured: Boolean(process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL),
       googleAuthConfigured: Boolean(process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID),
       environment: process.env.NODE_ENV || 'development'
