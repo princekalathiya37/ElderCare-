@@ -89,28 +89,28 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20 overflow-x-hidden">
+      <div className="max-w-4xl mx-auto w-full">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
+          <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Good Morning, {userName}!
             </h1>
-            <p className="text-base sm:text-xl text-slate-600 mt-1 sm:mt-2">{currentDate}</p>
+            <p className="text-sm sm:text-xl text-slate-600 mt-1 sm:mt-2">{currentDate}</p>
           </div>
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-xl">
-            <HeartPulse className="w-8 h-8 text-white" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-xl flex-shrink-0">
+            <HeartPulse className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
         </div>
 
         {/* Email Alert Banner */}
-        <Card className="p-4 sm:p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-4 sm:mb-6">
-          <div className="flex items-start space-x-4">
-            <Mail className="w-7 h-7 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="text-lg font-semibold text-amber-800 mb-1">Email Alert Active</h4>
-              <p className="text-amber-700">Your caregiver will be notified via email if medicine is not taken within 30 minutes</p>
+        <Card className="p-3 sm:p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 mb-4 sm:mb-6 overflow-hidden">
+          <div className="flex items-start space-x-3 sm:space-x-4">
+            <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <h4 className="text-base sm:text-lg font-semibold text-amber-800 mb-1">Email Alert Active</h4>
+              <p className="text-sm sm:text-base text-amber-700">Your caregiver will be notified via email if medicine is not taken within 30 minutes</p>
             </div>
           </div>
         </Card>
@@ -125,9 +125,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </Button>
 
         {/* Today's Medicines */}
-        <Card className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 mb-4 sm:mb-6 shadow-lg">
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
-            <Pill className="w-7 h-7 mr-3" />
+        <Card className="p-3 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 mb-4 sm:mb-6 shadow-lg overflow-hidden">
+          <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
+            <Pill className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 flex-shrink-0" />
             Today's Medicines
           </h2>
           {loading ? (
@@ -144,31 +144,31 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {todayMedicines.map((medicine) => (
                 <div
                   key={medicine._id}
-                  className={`p-6 rounded-2xl transition-all duration-300 ${
+                  className={`p-3 sm:p-6 rounded-2xl transition-all duration-300 overflow-hidden ${
                     medicine.taken
                       ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200'
                       : 'bg-gradient-to-r from-slate-50 to-emerald-50 border-2 border-emerald-100'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="text-xl font-bold text-slate-800 mb-1">{medicine.name}</h4>
-                      <p className="text-lg text-slate-600 mb-2">{medicine.dosage}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-lg sm:text-xl font-bold text-slate-800 mb-1 truncate">{medicine.name}</h4>
+                      <p className="text-base sm:text-lg text-slate-600 mb-2">{medicine.dosage}</p>
                       {medicine.emailAlert && !medicine.taken && (
                         <div className="flex items-center">
-                          <Mail className="w-5 h-5 text-amber-500 mr-2" />
-                          <span className="text-sm font-semibold text-amber-600">Email alert in 30 min</span>
+                          <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm font-semibold text-amber-600">Email alert in 30 min</span>
                         </div>
                       )}
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center text-slate-600 mb-2 justify-end">
-                        <Clock className="w-6 h-6 mr-2" />
-                        <span className="text-lg font-semibold">{medicine.times.join(', ')}</span>
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2">
+                      <div className="flex items-center text-slate-600">
+                        <Clock className="w-5 h-5 sm:w-6 sm:h-6 mr-1.5 sm:mr-2 flex-shrink-0" />
+                        <span className="text-base sm:text-lg font-semibold">{medicine.times.join(', ')}</span>
                       </div>
                       <Badge
                         variant={medicine.taken ? "secondary" : "destructive"}
-                        className="text-base px-4 py-2"
+                        className="text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2"
                       >
                         {medicine.taken ? "Taken" : "Pending"}
                       </Badge>
@@ -181,36 +181,36 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <Button
             onClick={() => onNavigate('medicines')}
             variant="outline"
-            className="w-full h-14 text-lg font-semibold border-2 border-emerald-300 hover:bg-emerald-50 rounded-2xl"
+            className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 border-emerald-300 hover:bg-emerald-50 rounded-2xl"
           >
             View All Medicines
           </Button>
         </Card>
 
         {/* Next Appointment */}
-        <Card className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg">
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
-            <Calendar className="w-7 h-7 mr-3" />
+        <Card className="p-3 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg overflow-hidden">
+          <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center">
+            <Calendar className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 flex-shrink-0" />
             Next Appointment
           </h2>
           {nextAppointment ? (
-            <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200">
-              <div className="flex items-start space-x-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
-                  <User className="w-8 h-8 text-white" />
+            <div className="p-3 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200 overflow-hidden">
+              <div className="flex items-start space-x-3 sm:space-x-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                  <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-2xl font-bold text-slate-800 mb-1">{nextAppointment.doctorName}</h4>
-                  {nextAppointment.specialty && <p className="text-lg text-slate-600 mb-4">{nextAppointment.specialty}</p>}
-                  <div className="space-y-2 text-base">
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-lg sm:text-2xl font-bold text-slate-800 mb-1 truncate">{nextAppointment.doctorName}</h4>
+                  {nextAppointment.specialty && <p className="text-base sm:text-lg text-slate-600 mb-3 sm:mb-4">{nextAppointment.specialty}</p>}
+                  <div className="space-y-2 text-sm sm:text-base">
                     <div className="flex items-center text-slate-700">
-                      <Calendar className="w-6 h-6 mr-3 text-emerald-600" />
+                      <Calendar className="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-emerald-600 flex-shrink-0" />
                       <span className="font-semibold">{new Date(nextAppointment.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {nextAppointment.time}</span>
                     </div>
                     {nextAppointment.location && (
-                      <div className="flex items-center text-slate-700">
-                        <MapPin className="w-6 h-6 mr-3 text-emerald-600" />
-                        <span>{nextAppointment.location}</span>
+                      <div className="flex items-start text-slate-700">
+                        <MapPin className="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <span className="break-words">{nextAppointment.location}</span>
                       </div>
                     )}
                   </div>
@@ -218,14 +218,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-slate-500 text-lg italic">
+            <div className="py-6 sm:py-8 text-center text-slate-500 text-base sm:text-lg italic">
               No upcoming appointments.
             </div>
           )}
           <Button
             onClick={() => onNavigate('appointments')}
             variant="outline"
-            className="w-full h-14 text-lg font-semibold border-2 border-emerald-300 hover:bg-emerald-50 rounded-2xl mt-6"
+            className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 border-emerald-300 hover:bg-emerald-50 rounded-2xl mt-4 sm:mt-6"
           >
             View All Appointments
           </Button>
