@@ -62,19 +62,19 @@ export function AddAppointmentScreen({ onNavigate }: AddAppointmentScreenProps) 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-8 sm:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('appointments')}
-          className="p-3 hover:bg-emerald-50"
+          className="p-2 sm:p-3 hover:bg-emerald-50 flex-shrink-0"
         >
-          <ArrowLeft className="w-8 h-8" />
+          <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
         </Button>
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+        <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent flex-1 text-center truncate px-2">
           Add Appointment
         </h1>
-        <div className="w-10" />
+        <div className="w-10 sm:w-14 flex-shrink-0" />
       </div>
 
       {/* Form */}
@@ -120,29 +120,29 @@ export function AddAppointmentScreen({ onNavigate }: AddAppointmentScreenProps) 
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Date */}
               <div className="space-y-2">
-                <Label htmlFor="date" className="text-lg font-semibold text-slate-700">Date *</Label>
+                <Label htmlFor="date" className="text-base sm:text-lg font-semibold text-slate-700">Date *</Label>
                 <Input
                   id="date"
                   type="date"
                   value={formData.date}
                   onChange={(e) => handleInputChange('date', e.target.value)}
-                  className="h-14 text-lg border-2 border-slate-200 rounded-2xl focus:border-emerald-400"
+                  className="h-12 sm:h-14 text-base sm:text-lg border-2 border-slate-200 rounded-2xl focus:border-emerald-400"
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
 
               {/* Time */}
               <div className="space-y-2">
-                <Label htmlFor="time" className="text-lg font-semibold text-slate-700">Time *</Label>
+                <Label htmlFor="time" className="text-base sm:text-lg font-semibold text-slate-700">Time *</Label>
                 <Input
                   id="time"
                   type="time"
                   value={formData.time}
                   onChange={(e) => handleInputChange('time', e.target.value)}
-                  className="h-14 text-lg border-2 border-slate-200 rounded-2xl focus:border-emerald-400"
+                  className="h-12 sm:h-14 text-base sm:text-lg border-2 border-slate-200 rounded-2xl focus:border-emerald-400"
                 />
               </div>
             </div>
@@ -174,9 +174,9 @@ export function AddAppointmentScreen({ onNavigate }: AddAppointmentScreenProps) 
         </Card>
 
         {/* Reminder Box */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border-2 border-blue-200">
-          <h4 className="text-xl font-bold text-blue-700 mb-3">📅 Appointment Reminders</h4>
-          <ul className="text-lg text-slate-600 space-y-2">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 rounded-2xl border-2 border-blue-200">
+          <h4 className="text-lg sm:text-xl font-bold text-blue-700 mb-2 sm:mb-3">📅 Appointment Reminders</h4>
+          <ul className="text-base sm:text-lg text-slate-600 space-y-1 sm:space-y-2">
             <li>• You'll receive a notification 24 hours before</li>
             <li>• Arrive 15 minutes early for check-in</li>
             <li>• Bring your insurance card and ID</li>

@@ -117,19 +117,19 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('home')}
-            className="p-3 hover:bg-emerald-50"
+            className="p-2 sm:p-3 hover:bg-emerald-50 flex-shrink-0"
           >
-            <ArrowLeft className="w-8 h-8" />
+            <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </Button>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent flex-1 text-center truncate px-2">
             My Medicines
           </h1>
-          <div className="w-10" />
+          <div className="w-10 sm:w-14 flex-shrink-0" />
         </div>
 
         {/* Info Bar */}
@@ -180,15 +180,15 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
             {medicines.map((medicine) => (
               <Card
                 key={medicine._id}
-                className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-6 flex-1">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <Pill className="w-8 h-8 text-white" />
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="flex items-start gap-4 sm:space-x-6 flex-1 min-w-0">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <Pill className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1 sm:mb-2 truncate">
                         {medicine.name}
                       </h3>
                       <p className="text-lg text-slate-600 mb-2">
@@ -208,24 +208,24 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
                       )}
                     </div>
                   </div>
-                  <div className="text-right space-y-4 ml-4">
+                  <div className="flex flex-row justify-between items-center sm:flex-col sm:items-end sm:text-right gap-3 sm:space-y-4 sm:ml-4 w-full sm:w-auto mt-2 sm:mt-0">
                     {medicine.taken ? (
                       <Badge
                         variant="secondary"
-                        className="text-lg px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700"
+                        className="text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700"
                       >
                         <CheckCircle2 className="w-5 h-5 mr-2" />
                         Taken Today
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-lg px-4 py-2 border-amber-300 text-amber-700 bg-amber-50">
+                      <Badge variant="outline" className="text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 border-amber-300 text-amber-700 bg-amber-50">
                         Pending
                       </Badge>
                     )}
                     {!medicine.taken && (
                       <Button
                         size="lg"
-                        className="h-14 text-base font-semibold mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-2xl"
+                        className="h-12 sm:h-14 text-sm sm:text-base font-semibold mt-0 sm:mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-2xl"
                         onClick={() => markTaken(medicine._id, medicine.times[0])}
                       >
                         <CheckCircle2 className="w-5 h-5 mr-2" />

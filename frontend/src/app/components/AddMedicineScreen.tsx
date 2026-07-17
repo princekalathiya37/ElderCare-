@@ -79,19 +79,19 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-8 sm:p-6 sm:pb-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('medicines')}
-            className="p-3 hover:bg-emerald-50"
+            className="p-2 sm:p-3 hover:bg-emerald-50 flex-shrink-0"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </Button>
-          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent flex-1 text-center truncate px-2">
             Add Medicine
           </h1>
-          <div className="w-10" />
+          <div className="w-10 sm:w-14 flex-shrink-0" />
         </div>
 
         {/* Medicine Details */}
@@ -104,42 +104,42 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="medicine-name" className="text-base font-semibold text-slate-700">Medicine Name *</Label>
+              <Label htmlFor="medicine-name" className="text-base sm:text-lg font-semibold text-slate-700">Medicine Name *</Label>
               <Input
                 id="medicine-name"
                 placeholder="e.g., Metformin, Aspirin"
                 value={formData.medicineName}
                 onChange={(e) => handleInputChange('medicineName', e.target.value)}
-                className="h-13 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
+                className="h-12 sm:h-14 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dosage" className="text-base font-semibold text-slate-700">Dosage *</Label>
+              <Label htmlFor="dosage" className="text-base sm:text-lg font-semibold text-slate-700">Dosage *</Label>
               <Input
                 id="dosage"
                 placeholder="e.g., 500mg, 1 tablet"
                 value={formData.dosage}
                 onChange={(e) => handleInputChange('dosage', e.target.value)}
-                className="h-13 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
+                className="h-12 sm:h-14 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="time" className="text-base font-semibold text-slate-700">Scheduled Time *</Label>
+              <Label htmlFor="time" className="text-base sm:text-lg font-semibold text-slate-700">Scheduled Time *</Label>
               <Input
                 id="time"
                 type="time"
                 value={formData.time}
                 onChange={(e) => handleInputChange('time', e.target.value)}
-                className="h-13 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
+                className="h-12 sm:h-14 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="frequency" className="text-base font-semibold text-slate-700">Frequency *</Label>
+              <Label htmlFor="frequency" className="text-base sm:text-lg font-semibold text-slate-700">Frequency *</Label>
               <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
-                <SelectTrigger className="h-13 text-base border-2 border-slate-200 rounded-xl">
+                <SelectTrigger className="h-12 sm:h-14 text-base border-2 border-slate-200 rounded-xl">
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
                 <SelectContent>
@@ -159,10 +159,10 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
         {/* Email Alert Feature */}
         <Card className="shadow-sm mb-6 border-2 border-emerald-100 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between text-emerald-700 text-xl">
-              <div className="flex items-center">
-                <Mail className="w-6 h-6 mr-3 text-emerald-600" />
-                Email Alert to Caretaker
+            <CardTitle className="flex items-center justify-between text-emerald-700 text-lg sm:text-xl gap-2">
+              <div className="flex items-center min-w-0 flex-1">
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-emerald-600 flex-shrink-0" />
+                <span className="truncate">Email Alert to Caretaker</span>
               </div>
               <Switch
                 checked={formData.emailAlertEnabled}

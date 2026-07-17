@@ -195,7 +195,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </h2>
           {nextAppointment ? (
             <div className="p-3 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200 overflow-hidden">
-              <div className="flex items-start space-x-3 sm:space-x-6">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:space-x-6">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
                   <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>

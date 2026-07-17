@@ -93,19 +93,19 @@ export function AppointmentsScreen({ onNavigate }: AppointmentsScreenProps) {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('home')}
-            className="p-3 hover:bg-emerald-50"
+            className="p-2 sm:p-3 hover:bg-emerald-50 flex-shrink-0"
           >
-            <ArrowLeft className="w-8 h-8" />
+            <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </Button>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent flex-1 text-center truncate px-2">
             Appointments
           </h1>
-          <div className="w-10" />
+          <div className="w-10 sm:w-14 flex-shrink-0" />
         </div>
 
         {/* Empty State */}
@@ -136,19 +136,19 @@ export function AppointmentsScreen({ onNavigate }: AppointmentsScreenProps) {
             </h3>
             <div className="space-y-6">
               {upcomingAppointments.map((appointment) => (
-                <Card key={appointment._id} className="p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <User className="w-8 h-8 text-white" />
+                <Card key={appointment._id} className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:space-x-6">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h4 className="text-2xl font-bold text-slate-800 mb-1">{appointment.doctorName}</h4>
-                          {appointment.specialty && <p className="text-lg text-slate-600">{appointment.specialty}</p>}
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+                        <div className="min-w-0">
+                          <h4 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1 truncate">{appointment.doctorName}</h4>
+                          {appointment.specialty && <p className="text-base sm:text-lg text-slate-600 truncate">{appointment.specialty}</p>}
                         </div>
-                        <div className="flex items-center gap-3">
-                          <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700">
+                        <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-auto">
+                          <Badge className="text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700">
                             Upcoming
                           </Badge>
                           <Button
@@ -205,19 +205,19 @@ export function AppointmentsScreen({ onNavigate }: AppointmentsScreenProps) {
             </h3>
             <div className="space-y-6">
               {pastAppointments.map((appointment) => (
-                <Card key={appointment._id} className="p-8 bg-white/80 backdrop-blur-sm border-2 border-slate-100 shadow-lg opacity-80">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <User className="w-8 h-8 text-white" />
+                <Card key={appointment._id} className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm border-2 border-slate-100 shadow-lg opacity-80">
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:space-x-6">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-slate-400 to-slate-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h4 className="text-2xl font-bold text-slate-800 mb-1">{appointment.doctorName}</h4>
-                          {appointment.specialty && <p className="text-lg text-slate-600">{appointment.specialty}</p>}
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+                        <div className="min-w-0">
+                          <h4 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1 truncate">{appointment.doctorName}</h4>
+                          {appointment.specialty && <p className="text-base sm:text-lg text-slate-600 truncate">{appointment.specialty}</p>}
                         </div>
-                        <div className="flex items-center gap-3">
-                          <Badge className="text-lg px-4 py-2 bg-slate-100 text-slate-600">Completed</Badge>
+                        <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-auto">
+                          <Badge className="text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-100 text-slate-600">Completed</Badge>
                           <Button
                             variant="ghost"
                             size="sm"
