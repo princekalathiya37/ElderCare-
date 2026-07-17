@@ -104,7 +104,7 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
+      <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 animate-spin text-emerald-600 mx-auto mb-4" />
           <p className="text-lg text-slate-600">Loading medicines...</p>
@@ -114,7 +114,7 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
+    <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-6 sm:p-8 sm:pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
@@ -138,7 +138,7 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
             <div className="flex items-center space-x-4">
               <Mail className="w-8 h-8 text-amber-600 flex-shrink-0" />
               <p className="text-lg text-amber-800 font-semibold">
-                Email alerts active — caregiver notified if medicine missed by 30 min
+                Email alerts active — Emergency Contacts notified if medicine missed by 30 min
               </p>
             </div>
             <Button
@@ -202,7 +202,7 @@ export function MedicineListScreen({ onNavigate }: MedicineListScreenProps) {
                         <div className="flex items-center mt-2 space-x-2">
                           <Mail className="w-5 h-5 text-amber-500" />
                           <span className="text-sm text-amber-600 font-semibold">
-                            Email alert to {medicine.emailContact}
+                            Email alert to Emergency Contacts
                           </span>
                         </div>
                       )}

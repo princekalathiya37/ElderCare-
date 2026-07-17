@@ -7,7 +7,7 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onContinue }: SplashScreenProps) {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
+    <div className="min-h-full bg-background flex flex-col items-center justify-center p-8">
       <div className="text-center space-y-10">
         {/* Logo Section */}
         <div className="flex flex-col items-center space-y-4">

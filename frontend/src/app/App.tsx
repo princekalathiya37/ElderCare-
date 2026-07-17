@@ -268,7 +268,7 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
     currentScreen !== 'terms';
 
   return (
-    <div className="min-h-screen h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex mx-auto relative w-full max-w-none" style={{ width: '100%', maxWidth: '1920px' }}>
+    <div className="min-h-[100dvh] h-[100dvh] bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex mx-auto relative w-full max-w-none" style={{ width: '100%', maxWidth: '1920px' }}>
       {showNav && (
         <div className="hidden lg:flex w-80 flex-col">
           <SidebarNavigation currentScreen={currentScreen} onNavigate={handleNavigate} />

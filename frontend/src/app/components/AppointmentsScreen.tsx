@@ -80,7 +80,7 @@ export function AppointmentsScreen({ onNavigate }: AppointmentsScreenProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
+      <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 animate-spin text-emerald-600 mx-auto mb-4" />
           <p className="text-lg text-slate-600">Loading appointments...</p>
@@ -90,7 +90,7 @@ export function AppointmentsScreen({ onNavigate }: AppointmentsScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20">
+    <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-6 sm:p-8 sm:pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">

@@ -10,11 +10,9 @@ export const startMedicineReminderScheduler = () => {
   cron.schedule('* * * * *', async () => {
     try {
       const now = new Date();
-      const currentTime = now.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
 
       // Find medicines scheduled for this time
       const medicines = await Medicine.find({

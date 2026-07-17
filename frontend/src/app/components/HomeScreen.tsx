@@ -89,7 +89,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-24 sm:p-8 sm:pb-20 overflow-x-hidden">
+    <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-6 sm:p-8 sm:pb-8 overflow-x-hidden">
       <div className="max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
@@ -110,7 +110,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <h4 className="text-base sm:text-lg font-semibold text-amber-800 mb-1">Email Alert Active</h4>
-              <p className="text-sm sm:text-base text-amber-700">Your caregiver will be notified via email if medicine is not taken within 30 minutes</p>
+              <p className="text-sm sm:text-base text-amber-700">Your Emergency Contacts will be notified via email if medicine is not taken within 30 minutes</p>
             </div>
           </div>
         </Card>

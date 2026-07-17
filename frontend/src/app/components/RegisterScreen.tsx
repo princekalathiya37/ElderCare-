@@ -117,7 +117,7 @@ export function RegisterScreen({ onNavigate }: RegisterScreenProps) {
   return (
     <>
       <BlackFireCursorTrail />
-      <div className="min-h-screen bg-background p-4 overflow-y-auto pb-20">
+      <div className="min-h-full bg-background p-4 overflow-y-auto pb-20">
       <div className="w-full max-w-md mx-auto py-8">
         {/* Logo */}
         <div className="text-center mb-6">

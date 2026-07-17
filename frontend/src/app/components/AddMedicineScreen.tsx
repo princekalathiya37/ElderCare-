@@ -20,9 +20,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
     dosage: '',
     time: '',
     frequency: '',
-    emailAlertEnabled: false,
-    emailContactName: '',
-    emailContactEmail: ''
+    emailAlertEnabled: false
   });
   const [loading, setLoading] = useState(false);
 
@@ -36,15 +34,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
       return;
     }
 
-    if (formData.emailAlertEnabled && !formData.emailContactEmail) {
-      toast.error("Please enter an email address for email alerts");
-      return;
-    }
-
-    if (formData.emailAlertEnabled && formData.emailContactEmail && !formData.emailContactEmail.includes('@')) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
+    // Removed email validation since we use Emergency SOS contacts
 
     try {
       setLoading(true);
@@ -54,7 +44,6 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
         frequency: formData.frequency,
         scheduledTimes: [formData.time],
         emailAlert: formData.emailAlertEnabled,
-        emailContact: formData.emailContactEmail,
         pushNotification: true
       };
 
@@ -62,7 +51,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
 
       if (response.success) {
         if (formData.emailAlertEnabled) {
-          toast.success(`Medicine saved! Email alert will be sent to ${formData.emailContactEmail} if not taken within 30 minutes.`);
+          toast.success("Medicine saved! Email alert will be sent to your Emergency Contacts if not taken within 30 minutes.");
         } else {
           toast.success("Medicine added successfully!");
         }
@@ -76,7 +65,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-8 sm:p-6 sm:pb-8">
+    <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 pt-6 pb-6 sm:p-6 sm:pb-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
@@ -162,7 +151,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
             <CardTitle className="flex items-center justify-between text-emerald-700 text-lg sm:text-xl gap-2">
               <div className="flex items-center min-w-0 flex-1">
                 <Mail className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-emerald-600 flex-shrink-0" />
-                <span className="truncate">Email Alert to Caretaker</span>
+                <span className="truncate">Alert Emergency Contacts</span>
               </div>
               <Switch
                 checked={formData.emailAlertEnabled}
@@ -174,36 +163,8 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
             <CardContent className="space-y-4">
               <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                 <p className="text-emerald-800 text-sm font-medium">
-                  📧 An email will be automatically sent to your caretaker if this medicine is not marked as taken within <strong>30 minutes</strong> of the scheduled time.
+                  📧 An email will be automatically sent to your <strong>Emergency SOS Contacts</strong> if this medicine is not marked as taken within <strong>30 minutes</strong> of the scheduled time.
                 </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contact-name" className="text-base font-semibold text-slate-700 flex items-center gap-2">
-                  Caretaker Name
-                </Label>
-                <Input
-                  id="contact-name"
-                  placeholder="e.g., Mary (daughter)"
-                  value={formData.emailContactName}
-                  onChange={(e) => handleInputChange('emailContactName', e.target.value)}
-                  className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contact-email" className="text-base font-semibold text-slate-700 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-emerald-600" />
-                  Caretaker Email Address *
-                </Label>
-                <Input
-                  id="contact-email"
-                  type="email"
-                  placeholder="caretaker@example.com"
-                  value={formData.emailContactEmail}
-                  onChange={(e) => handleInputChange('emailContactEmail', e.target.value)}
-                  className="h-12 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-400"
-                />
               </div>
 
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -216,7 +177,7 @@ export function AddMedicineScreen({ onNavigate }: AddMedicineScreenProps) {
           {!formData.emailAlertEnabled && (
             <CardContent>
               <p className="text-slate-500 text-sm">
-                Enable to automatically notify your caretaker via email if you miss your medicine dose by more than 30 minutes.
+                Enable to automatically notify your Emergency Contacts via email if you miss your medicine dose by more than 30 minutes.
               </p>
             </CardContent>
           )}

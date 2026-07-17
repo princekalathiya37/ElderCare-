@@ -109,7 +109,7 @@ export function LoginScreen({ onNavigate, onBack }: LoginScreenProps) {
   return (
     <>
       <BlackFireCursorTrail />
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+      <div className="min-h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-10 relative">
