@@ -19,10 +19,10 @@ export function BottomNavigation({ currentScreen, onNavigate }: BottomNavigation
 
   return (
     <LiquidGlass
-      className="border-t border-white/30 shadow-2xl"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      className="border-t border-white/40 shadow-2xl"
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)' }}
     >
-      <div className="flex items-center justify-around py-2 px-2 sm:py-3 sm:px-4">
+      <div className="flex items-center justify-around py-1.5 px-1 sm:py-2.5 sm:px-3">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentScreen === item.id;
@@ -31,14 +31,14 @@ export function BottomNavigation({ currentScreen, onNavigate }: BottomNavigation
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${
+              className={`flex flex-col items-center justify-center py-2 px-2.5 sm:px-3.5 rounded-2xl transition-all duration-300 min-w-[54px] ${
                 isActive 
-                  ? 'text-emerald-700 bg-white/40 shadow-lg backdrop-blur-sm' 
-                  : 'text-slate-600 hover:text-emerald-600 hover:bg-white/20'
+                  ? 'text-emerald-700 bg-white/50 shadow-md backdrop-blur-sm font-bold' 
+                  : 'text-slate-600 hover:text-emerald-600 hover:bg-white/20 font-medium'
               }`}
             >
-              <Icon className={`w-7 h-7 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : ''}`} />
-              <span className={`text-xs font-semibold ${isActive ? 'text-emerald-700' : ''}`}>{item.label}</span>
+              <Icon className={`w-6 h-6 sm:w-7 sm:h-7 mb-0.5 transition-transform duration-300 ${isActive ? 'scale-110 text-emerald-600' : ''}`} />
+              <span className={`text-[11px] sm:text-xs leading-tight tracking-tight ${isActive ? 'text-emerald-700' : ''}`}>{item.label}</span>
             </button>
           );
         })}

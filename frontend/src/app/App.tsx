@@ -269,29 +269,29 @@ function ElderApp({ onLogout, onBack, isRegister = false }: { onLogout: () => vo
 
   return (
     <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex overflow-hidden">
-      {/* Sidebar for Desktop */}
+      {/* Sidebar for Desktop / Laptop / Large Tablet */}
       {showNav && (
-        <div className="hidden lg:flex w-80 flex-col flex-none border-r border-emerald-100/50 bg-white/30 backdrop-blur-sm z-20">
+        <aside className="hidden md:flex w-64 lg:w-72 xl:w-80 flex-col flex-none border-r border-emerald-100/50 bg-white/30 backdrop-blur-sm z-20 transition-all duration-300">
           <SidebarNavigation currentScreen={currentScreen} onNavigate={handleNavigate} />
-        </div>
+        </aside>
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full relative z-10">
+      <main className="flex-1 flex flex-col min-w-0 h-full relative z-10">
         {/* Scrollable Screen Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth">
-          <div key={transitionKey} className="page-transition min-h-full flex flex-col">
+          <div key={transitionKey} className="page-transition min-h-full flex flex-col w-full">
             {renderScreen()}
           </div>
         </div>
 
-        {/* Bottom Navigation for Mobile */}
+        {/* Bottom Navigation for Mobile (< md breakpoint) */}
         {showNav && (
-          <div className="lg:hidden flex-none z-30 bg-white/80 backdrop-blur-md shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)]">
+          <nav className="md:hidden flex-none z-30 bg-white/80 backdrop-blur-md shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)]">
             <BottomNavigation currentScreen={currentScreen} onNavigate={handleNavigate} />
-          </div>
+          </nav>
         )}
-      </div>
+      </main>
     </div>
   );
 }

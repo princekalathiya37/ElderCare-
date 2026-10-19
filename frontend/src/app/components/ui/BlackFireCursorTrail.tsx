@@ -80,15 +80,21 @@ export function BlackFireCursorTrail() {
             }
           }}
           style={{
-            height: '24px',
-            width: '24px',
+            height: i === 0 ? '28px' : '20px',
+            width: i === 0 ? '28px' : '20px',
             borderRadius: '24px',
-            backgroundColor: 'black',
+            backgroundColor: i === 0 ? 'transparent' : 'black',
+            backgroundImage: i === 0 ? "url('/custom-cursor-32.png')" : 'none',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
             position: 'fixed', 
             top: '0',
             left: '0',
             pointerEvents: 'none',
             zIndex: '99999999',
+            opacity: i === 0 ? 0.95 : 0.8,
+            filter: i === 0 ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' : 'none',
           }}
         />
       ))}
